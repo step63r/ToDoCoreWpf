@@ -4,6 +4,8 @@ using MinatoProject.Apps.ToDoCoreWpf.Views;
 using System.Threading;
 using Prism.Modularity;
 using MinatoProject.Apps.ToDoCoreWpf.Content;
+using System;
+using System.IO;
 
 namespace MinatoProject.Apps.ToDoCoreWpf
 {
@@ -13,6 +15,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf
     public partial class App
     {
         #region メンバ変数
+        /// <summary>
+        /// 設定ファイルフォルダパス
+        /// </summary>
+        private static readonly string _settingsPath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf";
         /// <summary>
         /// 二重起動防止のミューテックス
         /// </summary>
@@ -25,6 +31,11 @@ namespace MinatoProject.Apps.ToDoCoreWpf
         /// <returns></returns>
         protected override Window CreateShell()
         {
+            if (!Directory.Exists(_settingsPath))
+            {
+                _ = Directory.CreateDirectory(_settingsPath);
+            }
+
             return Container.Resolve<MainWindow>();
         }
 
@@ -44,7 +55,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
             base.ConfigureModuleCatalog(moduleCatalog);
-            moduleCatalog.AddModule<ContentModule>();
+            _ = moduleCatalog.AddModule<ContentModule>();
         }
 
         /// <summary>
@@ -59,7 +70,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf
                 return;
             }
 
-            MessageBox.Show("アプリケーションは既に起動しています。", "ToDoCoreWpf", MessageBoxButton.OK, MessageBoxImage.Information);
+            _ = MessageBox.Show("アプリケーションは既に起動しています。", "ToDoCoreWpf", MessageBoxButton.OK, MessageBoxImage.Information);
             _mutex.Close();
             _mutex = null;
             Shutdown();

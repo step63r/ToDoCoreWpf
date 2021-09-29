@@ -12,6 +12,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         /// </summary>
         public Guid Guid => Guid.NewGuid();
         /// <summary>
+        /// 区分
+        /// </summary>
+        public ToDoCategory Category { get; set; }
+        /// <summary>
         /// 状況
         /// </summary>
         public ToDoStatus Status { get; set; }

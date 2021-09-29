@@ -4,7 +4,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private string _title = "Prism Application";
+        private string _title = "ToDo Core Wpf";
         public string Title
         {
             get { return _title; }
