@@ -1,9 +1,11 @@
 ﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
+using MinatoProject.Core.Codecs;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
@@ -17,46 +19,25 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public ObservableCollection<ToDoTask> Tasks { get; set; } = new ObservableCollection<ToDoTask>();
         #endregion
 
+        #region メンバ変数
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly string _tasksFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\tasks.xml";
+        #endregion
+
         #region コンストラクタ
         /// <summary>
         /// 
         /// </summary>
         public TasksPageViewModel()
         {
-            var now = DateTime.Now;
-            Tasks = new ObservableCollection<ToDoTask>()
+            if (!File.Exists(_tasksFilePath))
             {
-                new ToDoTask()
-                {
-                    Category = new ToDoCategory(){ Name = "区分１" },
-                    Status = new ToDoStatus(){ Name = "実行中" },
-                    Created = now,
-                    Updated = now,
-                    DueDate = now + new TimeSpan(7, 0, 0, 0),
-                    Title = "タスク１",
-                    Detail = string.Empty,
-                },
-                new ToDoTask()
-                {
-                    Category = new ToDoCategory(){ Name = "区分１" },
-                    Status = new ToDoStatus(){ Name = "実行中" },
-                    Created = now,
-                    Updated = now,
-                    DueDate = now + new TimeSpan(14, 0, 0, 0),
-                    Title = "タスク２",
-                    Detail = string.Empty,
-                },
-                new ToDoTask()
-                {
-                    Category = new ToDoCategory(){ Name = "区分１" },
-                    Status = new ToDoStatus(){ Name = "実行中" },
-                    Created = now,
-                    Updated = now,
-                    DueDate = now.AddMonths(1),
-                    Title = "タスク３",
-                    Detail = string.Empty,
-                },
-            };
+                _ = XmlConverter.SerializeAsync(Tasks, _tasksFilePath);
+            }
+
+            Tasks = XmlConverter.DeserializeAsync<ObservableCollection<ToDoTask>>(_tasksFilePath).Result;
         }
         #endregion
     }

@@ -21,6 +21,7 @@
         <Grid Grid.Row="1" Margin="8">
             <DataGrid ItemsSource="{Binding Tasks}" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True">
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" />
                     <DataGridTextColumn Header="Category" Binding="{Binding Category.Name}" />
                     <DataGridTextColumn Header="Status" Binding="{Binding Status.Name}" />
                     <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat=d}" />
