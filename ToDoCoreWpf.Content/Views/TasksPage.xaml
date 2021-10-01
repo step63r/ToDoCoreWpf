@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ext="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Extensions"
+             xmlns:model="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Models"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              prism:ViewModelLocator.AutoWireViewModel="True"
@@ -19,13 +22,18 @@
         </Grid>
         
         <Grid Grid.Row="1" Margin="8">
-            <DataGrid ItemsSource="{Binding Tasks}" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True">
+            <DataGrid ItemsSource="{Binding Tasks}" SelectionMode="Single" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SourceUpdated">
+                        <prism:InvokeCommandAction Command="{Binding OnSourceUpdatedCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" />
-                    <DataGridTextColumn Header="Category" Binding="{Binding Category.Name}" />
-                    <DataGridTextColumn Header="Status" Binding="{Binding Status.Name}" />
-                    <DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat=d}" />
-                    <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
+                    <materialDesign:DataGridComboBoxColumn Header="Priority" ItemsSourceBinding="{Binding Source={ext:EnumBindingSource EnumType={x:Type model:ToDoPriority}}}" SelectedItemBinding="{Binding Priority, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="Category" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Category.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="Status" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Status.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat=d, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="Title" Binding="{Binding Title, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
@@ -7,53 +9,183 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
     /// タスク
     /// </summary>
     [DataContract]
-    public record ToDoTask : IComparable<ToDoTask>
+    public class ToDoTask : INotifyPropertyChanged, IComparable<ToDoTask>
     {
+        #region INotifyPropertyChanged
         /// <summary>
-        /// Guid
+        /// 
         /// </summary>
-        [DataMember]
-        public Guid Guid { get; private set; } = new Guid();
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        private ToDoCategory _category = new();
         /// <summary>
         /// 区分
         /// </summary>
         [DataMember]
-        public ToDoCategory Category { get; set; }
+        public virtual ToDoCategory Category
+        {
+            get => _category;
+            set
+            {
+                if (value == _category)
+                {
+                    return;
+                }
+                _category = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Category));
+            }
+        }
+
+        private ToDoStatus _status = new();
         /// <summary>
         /// 状況
         /// </summary>
         [DataMember]
-        public ToDoStatus Status { get; set; }
+        public virtual ToDoStatus Status
+        {
+            get => _status;
+            set
+            {
+                if (value == _status)
+                {
+                    return;
+                }
+                _status = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Status));
+            }
+        }
+
+        private ToDoPriority _priority = ToDoPriority.Medium;
         /// <summary>
         /// 優先度
         /// </summary>
         [DataMember]
-        public ToDoPriority Priority { get; set; } = ToDoPriority.Medium;
+        public ToDoPriority Priority
+        {
+            get => _priority;
+            set
+            {
+                if (value == _priority)
+                {
+                    return;
+                }
+                _priority = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Priority));
+            }
+        }
+
+        private DateTime _created = DateTime.Now;
         /// <summary>
         /// 作成日時
         /// </summary>
         [DataMember]
-        public DateTime Created { get; private set; } = DateTime.Now;
+        public DateTime Created
+        {
+            get => _created;
+            private set
+            {
+                if (value == _created)
+                {
+                    return;
+                }
+                _created = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Created));
+            }
+        }
+
+        private DateTime _updated;
         /// <summary>
         /// 更新日時
         /// </summary>
         [DataMember]
-        public DateTime Updated { get; set; }
+        public DateTime Updated
+        {
+            get => _updated;
+            set
+            {
+                if (value == _updated)
+                {
+                    return;
+                }
+                _updated = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Updated));
+            }
+        }
+
+        private DateTime _dueDate = DateTime.Now.AddDays(1);
         /// <summary>
         /// 期限
         /// </summary>
         [DataMember]
-        public DateTime DueDate { get; set; }
+        public DateTime DueDate
+        {
+            get => _dueDate;
+            set
+            {
+                if (value == _dueDate)
+                {
+                    return;
+                }
+                _dueDate = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(DueDate));
+            }
+        }
+
+        private string _title = string.Empty;
         /// <summary>
         /// タイトル
         /// </summary>
         [DataMember]
-        public string Title { get; set; }
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if (value == _title)
+                {
+                    return;
+                }
+                _title = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Title));
+            }
+        }
+
+        private string _detail = string.Empty;
         /// <summary>
         /// 詳細
         /// </summary>
         [DataMember]
-        public string Detail { get; set; }
+        public string Detail
+        {
+            get => _detail;
+            set
+            {
+                if (value == _detail)
+                {
+                    return;
+                }
+                _detail = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Detail));
+            }
+        }
 
         /// <summary>
         /// インスタンスを比較する

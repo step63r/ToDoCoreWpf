@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
@@ -7,22 +8,62 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
     /// 状況
     /// </summary>
     [DataContract]
-    public record ToDoStatus
+    public class ToDoStatus : INotifyPropertyChanged
     {
+        #region INotifyPropertyChanged
         /// <summary>
-        /// Guid
+        /// 
         /// </summary>
-        [DataMember]
-        public Guid Guid { get; private set; } = new Guid();
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        private int _order;
         /// <summary>
         /// 並び順
         /// </summary>
         [DataMember]
-        public int Order { get; set; }
+        public int Order
+        {
+            get => _order;
+            set
+            {
+                if (value == _order)
+                {
+                    return;
+                }
+                _order = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Order));
+            }
+        }
+
+        private string _name = string.Empty;
         /// <summary>
         /// 名前
         /// </summary>
         [DataMember]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (value == _name)
+                {
+                    return;
+                }
+                _name = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Name));
+            }
+        }
     }
 }
