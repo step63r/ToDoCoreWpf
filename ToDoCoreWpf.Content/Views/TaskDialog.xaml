@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="MinatoProject.Apps.ToDoCoreWpf.Content.Views.TaskDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ext="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Extensions"
+             xmlns:model="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Models"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="区分" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Task.Category}" Width="200" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="状況" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Task.Status}" Width="200" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="優先度" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Source={ext:EnumBindingSource EnumType={x:Type model:ToDoPriority}}}" SelectedItem="{Binding Task.Priority}" Width="200" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="作成日時" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Task.Created, StringFormat=yyyy/MM/dd}" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="更新日時" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Task.Updated, StringFormat=yyyy/MM/dd}" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="期限" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Task.DueDate, StringFormat=yyyy/MM/dd}" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="タイトル" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Task.Title}" Width="200" Margin="0 0 0 8" />
+
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="詳細" VerticalAlignment="Center" Margin="0 0 8 0" />
+            <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Task.Detail}" Width="200" Margin="0 0 0 8" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="OK" Margin="8" />
+            <Button Grid.Column="1" Content="Cancel" Margin="8" Style="{StaticResource MaterialDesignRaisedAccentButton}" />
+        </Grid>
+    </Grid>
+</UserControl>

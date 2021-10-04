@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
 {
@@ -9,10 +10,13 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
     public enum ToDoPriority
     {
         [EnumMember]
+        [Description("高")]
         High,
         [EnumMember]
+        [Description("中")]
         Medium,
         [EnumMember]
+        [Description("低")]
         Low,
     }
 }
