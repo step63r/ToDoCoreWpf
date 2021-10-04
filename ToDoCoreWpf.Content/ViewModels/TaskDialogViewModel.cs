@@ -3,8 +3,6 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
@@ -22,15 +20,11 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         #endregion
 
         #region プロパティ
-        private string _title = string.Empty;
         /// <summary>
         /// 
         /// </summary>
-        public string Title
-        {
-            get => _title;
-            set => _ = SetProperty(ref _title, value);
-        }
+        public string Title => Task?.Title;
+
         private ToDoTask _task;
         /// <summary>
         /// 
@@ -71,7 +65,11 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteOkCommand()
         {
-
+            var param = new DialogParameters()
+            {
+                { "UpdateTask", Task }
+            };
+            RequestClose?.Invoke(new DialogResult(ButtonResult.OK, param));
         }
         /// <summary>
         /// 
@@ -79,7 +77,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <returns></returns>
         private bool CanExecuteOkCommand()
         {
-            return !string.IsNullOrEmpty(Task.Title);
+            return Task != null && !string.IsNullOrEmpty(Task.Title);
         }
 
         /// <summary>
@@ -87,21 +85,33 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteCancelCommand()
         {
-
+            RequestClose?.Invoke(new DialogResult(ButtonResult.Cancel));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="parameters"></param>
+        public void OnDialogOpened(IDialogParameters parameters)
+        {
+            Task = parameters.GetValue<ToDoTask>("Task");
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public bool CanCloseDialog()
         {
             return true;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void OnDialogClosed()
         {
 
-        }
-
-        public void OnDialogOpened(IDialogParameters parameters)
-        {
         }
     }
 }

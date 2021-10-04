@@ -3,7 +3,6 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -24,6 +23,28 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             set => _ = SetProperty(ref _tasks, value);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<ToDoTask> FilteredTasks
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(SearchQuery))
+                {
+                    return Tasks;
+                }
+                else
+                {
+                    return new ObservableCollection<ToDoTask>(
+                        Tasks.Where(item => item.Title.ToLower().Contains(SearchQuery.ToLower()) ||
+                                            item.Detail.ToLower().Contains(SearchQuery.ToLower()) ||
+                                            item.Category.Name.ToLower().Contains(SearchQuery.ToLower()) ||
+                                            item.Status.Name.ToLower().Contains(SearchQuery.ToLower())).ToList());
+                }
+            }
+        }
+
         private ToDoTask _selectedTask;
         /// <summary>
         /// 
@@ -32,6 +53,20 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         {
             get => _selectedTask;
             set => _ = SetProperty(ref _selectedTask, value);
+        }
+
+        private string _searchQuery = string.Empty;
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SearchQuery
+        {
+            get => _searchQuery;
+            set
+            {
+                _ = SetProperty(ref _searchQuery, value);
+                RaisePropertyChanged(nameof(FilteredTasks));
+            }
         }
         #endregion
 
@@ -100,8 +135,18 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 
         private void ExecuteShowTaskCommand()
         {
-            var ret = ButtonResult.Cancel;
-            _dialogService.ShowDialog("TaskDialog", null, r => ret = r.Result, "");
+            var param = new DialogParameters
+            {
+                { "Task", SelectedTask }
+            };
+            _dialogService.ShowDialog("TaskDialog", param, r =>
+            {
+                if (r.Result == ButtonResult.OK)
+                {
+                    var updateTask = r.Parameters.GetValue<ToDoTask>("UpdateTask");
+                    UpdateTasks(updateTask);
+                }
+            });
         }
         private bool CanExecuteShowTaskCommand()
         {
@@ -135,6 +180,23 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             var taskList = source.ToList();
             taskList.Sort();
             return new ObservableCollection<ToDoTask>(taskList);
+        }
+
+        /// <summary>
+        /// タスク一覧を更新する
+        /// </summary>
+        /// <param name="targetTask"></param>
+        private void UpdateTasks(ToDoTask targetTask)
+        {
+            var previousTask = Tasks.FirstOrDefault(item => item.Equals(targetTask));
+            if (previousTask != null)
+            {
+                _ = Tasks.Remove(previousTask);
+            }
+            Tasks.Add(targetTask);
+
+            Tasks = SortTasks(Tasks);
+            File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
         }
     }
 }

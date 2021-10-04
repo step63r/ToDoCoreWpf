@@ -23,11 +23,11 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="8">
-            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="Search" />
+            <TextBox Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="タスクを検索" />
         </Grid>
         
         <Grid Grid.Row="1" Margin="8">
-            <DataGrid ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" SelectionMode="Single" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True">
+            <DataGrid ItemsSource="{Binding FilteredTasks}" SelectedItem="{Binding SelectedTask}" SelectionMode="Single" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True">
                 <DataGrid.InputBindings>
                     <KeyBinding Key="Return" Command="{Binding ShowTaskCommand}" />
                     <KeyBinding Key="Delete" Command="{Binding RemoveTaskCommand}" />

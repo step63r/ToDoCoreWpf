@@ -9,7 +9,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
     /// タスク
     /// </summary>
     [DataContract]
-    public class ToDoTask : INotifyPropertyChanged, IComparable<ToDoTask>
+    public class ToDoTask : INotifyPropertyChanged, IEquatable<ToDoTask>, IComparable<ToDoTask>
     {
         #region INotifyPropertyChanged
         /// <summary>
@@ -26,6 +26,26 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
+
+        private Guid _guid = Guid.NewGuid();
+        /// <summary>
+        /// Guid
+        /// </summary>
+        [DataMember]
+        public Guid Guid
+        {
+            get => _guid;
+            private set
+            {
+                if (value == _guid)
+                {
+                    return;
+                }
+                _guid = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(Category));
+            }
+        }
 
         private ToDoCategory _category = new();
         /// <summary>
@@ -185,6 +205,40 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(Detail));
             }
+        }
+
+        #region コンストラクタ
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        public ToDoTask() { }
+
+        /// <summary>
+        /// コピーコンストラクタ
+        /// </summary>
+        /// <param name="source">コピー元オブジェクト</param>
+        public ToDoTask(ToDoTask source)
+        {
+            Guid = source.Guid;
+            Category = source.Category;
+            Status = source.Status;
+            Priority = source.Priority;
+            Created = source.Created;
+            Updated = source.Updated;
+            DueDate = source.DueDate;
+            Title = source.Title;
+            Detail = source.Detail;
+        }
+        #endregion
+
+        /// <summary>
+        /// このクラスのオブジェクト同士が等価かどうか判定する
+        /// </summary>
+        /// <param name="other">別のインスタンス</param>
+        /// <returns></returns>
+        public bool Equals(ToDoTask other)
+        {
+            return Guid.Equals(other.Guid);
         }
 
         /// <summary>
