@@ -3,6 +3,8 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
@@ -34,6 +36,26 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             get => _task;
             set => _ = SetProperty(ref _task, value);
         }
+
+        private ObservableCollection<ToDoCategory> _categories;
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<ToDoCategory> Categories
+        {
+            get => _categories;
+            set => _ = SetProperty(ref _categories, value);
+        }
+
+        private ObservableCollection<ToDoStatus> _statuses;
+        /// <summary>
+        /// 
+        /// </summary>
+        public ObservableCollection<ToDoStatus> Statuses
+        {
+            get => _statuses;
+            set => _ = SetProperty(ref _statuses, value);
+        }
         #endregion
 
         #region コマンド
@@ -45,6 +67,17 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 
         /// </summary>
         public DelegateCommand CancelCommand { get; private set; }
+        #endregion
+
+        #region メンバ変数
+        /// <summary>
+        /// 
+        /// </summary>
+        private ToDoCategory _currentCategory;
+        /// <summary>
+        /// 
+        /// </summary>
+        private ToDoStatus _currentStatus;
         #endregion
 
         #region コンストラクタ
@@ -65,6 +98,35 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteOkCommand()
         {
+            // 区分と状況の名前が変更されていたら新しいインスタンスに差し替える
+            if (!_currentCategory.Name.Equals(Task.Category.Name))
+            {
+                var category = Categories.FirstOrDefault(item => item.Name.Equals(Task.Category.Name));
+                if (category == null)
+                {
+                    category = new ToDoCategory()
+                    {
+                        Order = Categories.Max(item => item.Order) + 1,
+                        Name = Task.Category.Name
+                    };
+                }
+                Task.Category = category;
+            }
+
+            if (!_currentStatus.Name.Equals(Task.Status.Name))
+            {
+                var status = Statuses.FirstOrDefault(item => item.Name.Equals(Task.Status.Name));
+                if (status == null)
+                {
+                    status = new ToDoStatus()
+                    {
+                        Order = Statuses.Max(item => item.Order) + 1,
+                        Name = Task.Status.Name
+                    };
+                }
+                Task.Status = status;
+            }
+
             var param = new DialogParameters()
             {
                 { "UpdateTask", Task }
@@ -95,6 +157,14 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public void OnDialogOpened(IDialogParameters parameters)
         {
             Task = parameters.GetValue<ToDoTask>("Task");
+            if (Task != null)
+            {
+                _currentCategory = Task.Category;
+                _currentStatus = Task.Status;
+            }
+
+            Categories = parameters.GetValue<ObservableCollection<ToDoCategory>>("Categories");
+            Statuses = parameters.GetValue<ObservableCollection<ToDoStatus>>("Statuses");
         }
 
         /// <summary>

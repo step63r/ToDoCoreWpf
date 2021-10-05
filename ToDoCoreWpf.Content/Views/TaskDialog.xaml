@@ -54,10 +54,10 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Margin="0 0 8 0">
-                    <ComboBox Text="{Binding Task.Category}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" IsEditable="True" materialDesign:HintAssist.Hint="区分" />
+                    <ComboBox ItemsSource="{Binding Categories}" DisplayMemberPath="Name" SelectedItem="{Binding Task.Category}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" IsEditable="True" materialDesign:HintAssist.Hint="区分" />
                 </Grid>
                 <Grid Grid.Column="1">
-                    <ComboBox Text="{Binding Task.Status}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" IsEditable="True" materialDesign:HintAssist.Hint="状況" />
+                    <ComboBox ItemsSource="{Binding Statuses}" DisplayMemberPath="Name" SelectedItem="{Binding Task.Status}" Style="{StaticResource MaterialDesignFloatingHintComboBox}" IsEditable="True" materialDesign:HintAssist.Hint="状況" />
                 </Grid>
             </Grid>
 

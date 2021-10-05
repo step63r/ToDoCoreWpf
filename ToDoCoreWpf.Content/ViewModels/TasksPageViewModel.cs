@@ -4,6 +4,7 @@ using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -13,18 +14,42 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
     public class TasksPageViewModel : BindableBase
     {
         #region プロパティ
+        private ObservableCollection<ToDoCategory> _categories = new ObservableCollection<ToDoCategory>();
+        /// <summary>
+        /// 区分一覧
+        /// </summary>
+        public ObservableCollection<ToDoCategory> Categories
+        {
+            get => _categories;
+            set => _ = SetProperty(ref _categories, value);
+        }
+
+        private ObservableCollection<ToDoStatus> _statuses = new ObservableCollection<ToDoStatus>();
+        /// <summary>
+        /// 状況一覧
+        /// </summary>
+        public ObservableCollection<ToDoStatus> Statuses
+        {
+            get => _statuses;
+            set => _ = SetProperty(ref _statuses, value);
+        }
+
         private ObservableCollection<ToDoTask> _tasks = new ObservableCollection<ToDoTask>();
         /// <summary>
-        /// 
+        /// タスク一覧
         /// </summary>
         public ObservableCollection<ToDoTask> Tasks
         {
             get => _tasks;
-            set => _ = SetProperty(ref _tasks, value);
+            set
+            {
+                _ = SetProperty(ref _tasks, value);
+                RaisePropertyChanged(nameof(FilteredTasks));
+            }
         }
 
         /// <summary>
-        /// 
+        /// 検索文字列でフィルターしたタスク一覧
         /// </summary>
         public ObservableCollection<ToDoTask> FilteredTasks
         {
@@ -37,17 +62,17 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 else
                 {
                     return new ObservableCollection<ToDoTask>(
-                        Tasks.Where(item => item.Title.ToLower().Contains(SearchQuery.ToLower()) ||
-                                            item.Detail.ToLower().Contains(SearchQuery.ToLower()) ||
-                                            item.Category.Name.ToLower().Contains(SearchQuery.ToLower()) ||
-                                            item.Status.Name.ToLower().Contains(SearchQuery.ToLower())).ToList());
+                        Tasks.Where(item => item.Title.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture)) ||
+                                            item.Detail.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture)) ||
+                                            item.Category.Name.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture)) ||
+                                            item.Status.Name.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture))).ToList());
                 }
             }
         }
 
         private ToDoTask _selectedTask;
         /// <summary>
-        /// 
+        /// 選択されたタスク
         /// </summary>
         public ToDoTask SelectedTask
         {
@@ -57,7 +82,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 
         private string _searchQuery = string.Empty;
         /// <summary>
-        /// 
+        /// 検索文字列
         /// </summary>
         public string SearchQuery
         {
@@ -74,6 +99,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        public DelegateCommand CreateNewCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DelegateCommand ShowTaskCommand { get; private set; }
         /// <summary>
         /// 
@@ -83,6 +112,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 
         /// </summary>
         public DelegateCommand OnSourceUpdatedCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public DelegateCommand OnSelectionChangedCommand { get; private set; }
         #endregion
 
         #region インターフェイス
@@ -96,7 +129,20 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        private static readonly string _categoriesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\categories.json";
+        /// <summary>
+        /// 
+        /// </summary>
+        private static readonly string _statusesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\statuses.json";
+        /// <summary>
+        /// 
+        /// </summary>
         private static readonly string _tasksFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\tasks.json";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private ToDoTask _currentSelectedTask;
         #endregion
 
         #region コンストラクタ
@@ -106,22 +152,36 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <param name="dialogService">IDialogService</param>
         public TasksPageViewModel(IDialogService dialogService)
         {
+            // ファイル作成＆読み込み
+            if (!File.Exists(_categoriesFilePath))
+            {
+                File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
+            }
+            Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath));
+
+            if (!File.Exists(_statusesFilePath))
+            {
+                File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
+            }
+            Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath));
+
             if (!File.Exists(_tasksFilePath))
             {
                 File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
             }
-
             Tasks = JsonSerializer.Deserialize<ObservableCollection<ToDoTask>>(File.ReadAllText(_tasksFilePath));
 
             // インターフェイスの登録
             _dialogService = dialogService;
 
             // コマンドの登録
+            CreateNewCommand = new DelegateCommand(ExecuteCreateNewCommand);
             ShowTaskCommand = new DelegateCommand(ExecuteShowTaskCommand, CanExecuteShowTaskCommand)
                 .ObservesProperty(() => SelectedTask);
             RemoveTaskCommand = new DelegateCommand(ExecuteRemoveTaskCommand, CanExecuteRemoveTaskCommand)
                 .ObservesProperty(() => SelectedTask);
             OnSourceUpdatedCommand = new DelegateCommand(ExecuteOnSourceUpdatedCommand);
+            OnSelectionChangedCommand = new DelegateCommand(ExecuteOnSelectionChangedCommand);
         }
         #endregion
 
@@ -130,14 +190,67 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteOnSourceUpdatedCommand()
         {
-            File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
+            // 区分と状況の名前が変更されていたら新しいインスタンスに差し替える
+            if (!_currentSelectedTask.Category.Name.Equals(SelectedTask.Category.Name))
+            {
+                var category = Categories.FirstOrDefault(item => item.Name.Equals(SelectedTask.Category.Name));
+                if (category == null)
+                {
+                    category = new ToDoCategory()
+                    {
+                        Order = Categories.Max(item => item.Order) + 1,
+                        Name = SelectedTask.Category.Name
+                    };
+                }
+                SelectedTask.Category = category;
+            }
+
+            if (!_currentSelectedTask.Status.Name.Equals(SelectedTask.Status.Name))
+            {
+                var status = Statuses.FirstOrDefault(item => item.Name.Equals(SelectedTask.Status.Name));
+                if (status == null)
+                {
+                    status = new ToDoStatus()
+                    {
+                        Order = Statuses.Max(item => item.Order) + 1,
+                        Name = SelectedTask.Status.Name
+                    };
+                }
+                SelectedTask.Status = status;
+            }
+
+            UpdateTasks(SelectedTask);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ExecuteOnSelectionChangedCommand()
+        {
+            _currentSelectedTask = SelectedTask;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ExecuteCreateNewCommand()
+        {
+            var newTask = new ToDoTask();
+            SelectedTask = newTask;
+            _currentSelectedTask = SelectedTask;
+            UpdateTasks(newTask);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void ExecuteShowTaskCommand()
         {
             var param = new DialogParameters
             {
-                { "Task", SelectedTask }
+                { "Categories", Categories },
+                { "Statuses", Statuses },
+                { "Task", SelectedTask },
             };
             _dialogService.ShowDialog("TaskDialog", param, r =>
             {
@@ -148,6 +261,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 }
             });
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private bool CanExecuteShowTaskCommand()
         {
             return SelectedTask != null;
@@ -171,32 +288,53 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        private ObservableCollection<ToDoTask> SortTasks(ObservableCollection<ToDoTask> source)
-        {
-            var taskList = source.ToList();
-            taskList.Sort();
-            return new ObservableCollection<ToDoTask>(taskList);
-        }
-
-        /// <summary>
         /// タスク一覧を更新する
         /// </summary>
         /// <param name="targetTask"></param>
         private void UpdateTasks(ToDoTask targetTask)
         {
+            // 区分を更新
+            var previousCategory = Categories.FirstOrDefault(item => item.Equals(targetTask.Category));
+            if (previousCategory != null)
+            {
+                _ = Categories.Remove(previousCategory);
+            }
+            Categories.Add(targetTask.Category);
+            Categories = SortCollection(Categories);
+            File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
+
+            // 状況を更新
+            var previousStatus = Statuses.FirstOrDefault(item => item.Equals(targetTask.Status));
+            if (previousStatus != null)
+            {
+                _ = Statuses.Remove(previousStatus);
+            }
+            Statuses.Add(targetTask.Status);
+            Statuses = SortCollection(Statuses);
+            File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
+
+            // タスクを更新
             var previousTask = Tasks.FirstOrDefault(item => item.Equals(targetTask));
             if (previousTask != null)
             {
                 _ = Tasks.Remove(previousTask);
             }
             Tasks.Add(targetTask);
-
-            Tasks = SortTasks(Tasks);
+            Tasks = SortCollection(Tasks);
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
+        }
+
+        /// <summary>
+        /// コレクションをソートする
+        /// </summary>
+        /// <typeparam name="T">型</typeparam>
+        /// <param name="source">ソート前のコレクション</param>
+        /// <returns>ソート後のコレクション</returns>
+        private static ObservableCollection<T> SortCollection<T>(ObservableCollection<T> source) where T : class
+        {
+            var list = source.ToList();
+            list.Sort();
+            return new ObservableCollection<T>(list);
         }
     }
 }

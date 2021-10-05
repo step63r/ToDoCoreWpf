@@ -11,22 +11,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
     [DataContract]
     public class ToDoTask : INotifyPropertyChanged, IEquatable<ToDoTask>, IComparable<ToDoTask>
     {
-        #region INotifyPropertyChanged
-        /// <summary>
-        /// 
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="propertyName"></param>
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
-
+        #region プロパティ
         private Guid _guid = Guid.NewGuid();
         /// <summary>
         /// Guid
@@ -43,7 +28,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
                 }
                 _guid = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged(nameof(Category));
+                RaisePropertyChanged(nameof(Guid));
             }
         }
 
@@ -206,6 +191,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
                 RaisePropertyChanged(nameof(Detail));
             }
         }
+        #endregion
 
         #region コンストラクタ
         /// <summary>
@@ -231,6 +217,23 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         }
         #endregion
 
+        #region INotifyPropertyChanged
+        /// <summary>
+        /// 
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="propertyName"></param>
+        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        #region IEquatable<T>
         /// <summary>
         /// このクラスのオブジェクト同士が等価かどうか判定する
         /// </summary>
@@ -240,7 +243,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         {
             return Guid.Equals(other.Guid);
         }
+        #endregion
 
+        #region IComparable<T>
         /// <summary>
         /// インスタンスを比較する
         /// </summary>
@@ -279,5 +284,6 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             // 区分が同じ場合、タイトルで比較
             return string.Compare(Title, other.Title, StringComparison.Ordinal);
         }
+        #endregion
     }
 }
