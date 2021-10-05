@@ -22,10 +22,39 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="8">
-            <TextBox Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignOutlinedTextBox}" materialDesign:HintAssist.Hint="タスクを検索" />
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Menu>
+                    <MenuItem Header="ファイル(_F)">
+                        <MenuItem Header="終了" Icon="{materialDesign:PackIcon Kind=ExitToApp}" />
+                    </MenuItem>
+                    <MenuItem Header="編集(_E)" />
+                    <MenuItem Header="オプション(_O)">
+                        
+                    </MenuItem>
+                    <MenuItem Header="ヘルプ(_H)" />
+                </Menu>
+            </Grid>
+            <Grid Grid.Column="1" Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0" Margin="0 0 4 0">
+                    <materialDesign:PackIcon Kind="Magnify" VerticalAlignment="Center" />
+                </Grid>
+                <Grid Grid.Column="1">
+                    <TextBox Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
+                             materialDesign:HintAssist.Hint="タスクを検索" materialDesign:TextFieldAssist.HasClearButton="True" />
+
+                </Grid>
+            </Grid>
         </Grid>
-        
+
         <Grid Grid.Row="1" Margin="8">
             <DataGrid ItemsSource="{Binding FilteredTasks}" SelectedItem="{Binding SelectedTask}" SelectionMode="Single" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True">
                 <DataGrid.InputBindings>
@@ -59,11 +88,11 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
                 <DataGrid.Columns>
-                    <materialDesign:DataGridComboBoxColumn Header="Priority" ItemsSourceBinding="{Binding Source={ext:EnumBindingSource EnumType={x:Type model:ToDoPriority}}}" SelectedItemBinding="{Binding Priority, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="Category" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Category.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="Status" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Status.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="Due Date" Binding="{Binding DueDate, StringFormat=yyyy/MM/dd, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="Title" Binding="{Binding Title, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridComboBoxColumn Header="優先度" ItemsSourceBinding="{Binding Source={ext:EnumBindingSource EnumType={x:Type model:ToDoPriority}}}" SelectedItemBinding="{Binding Priority, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="区分" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Category.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="状況" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Status.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="期限" Binding="{Binding DueDate, StringFormat=yyyy/MM/dd, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <materialDesign:DataGridTextColumn Header="タイトル" Binding="{Binding Title, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
