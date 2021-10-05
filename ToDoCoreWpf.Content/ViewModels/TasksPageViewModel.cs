@@ -1,4 +1,5 @@
-﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
+﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Extensions;
+using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -8,6 +9,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Windows;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
@@ -57,7 +59,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             {
                 if (string.IsNullOrEmpty(SearchQuery))
                 {
-                    return Tasks;
+                    return Tasks.SortCollection();
                 }
                 else
                 {
@@ -65,7 +67,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                         Tasks.Where(item => item.Title.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture)) ||
                                             item.Detail.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture)) ||
                                             item.Category.Name.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture)) ||
-                                            item.Status.Name.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture))).ToList());
+                                            item.Status.Name.ToLower(CultureInfo.CurrentCulture).Contains(SearchQuery.ToLower(CultureInfo.CurrentCulture))).ToList())
+                        .SortCollection();
                 }
             }
         }
@@ -96,6 +99,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         #endregion
 
         #region コマンド
+        /// <summary>
+        /// 
+        /// </summary>
+        public DelegateCommand ShutdownCommand { get; private set; }
         /// <summary>
         /// 
         /// </summary>
@@ -175,6 +182,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             _dialogService = dialogService;
 
             // コマンドの登録
+            ShutdownCommand = new DelegateCommand(ExecuteShutdownCommand);
             CreateNewCommand = new DelegateCommand(ExecuteCreateNewCommand);
             ShowTaskCommand = new DelegateCommand(ExecuteShowTaskCommand, CanExecuteShowTaskCommand)
                 .ObservesProperty(() => SelectedTask);
@@ -230,15 +238,31 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             _currentSelectedTask = SelectedTask;
         }
 
+        private void ExecuteShutdownCommand()
+        {
+            Application.Current.Shutdown();
+        }
+
         /// <summary>
         /// 
         /// </summary>
         private void ExecuteCreateNewCommand()
         {
-            var newTask = new ToDoTask();
-            SelectedTask = newTask;
-            _currentSelectedTask = SelectedTask;
-            UpdateTasks(newTask);
+            var param = new DialogParameters
+            {
+                { "Categories", Categories },
+                { "Statuses", Statuses },
+                { "Task", new ToDoTask() },
+            };
+            _dialogService.ShowDialog("TaskDialog", param, r =>
+            {
+                if (r.Result == ButtonResult.OK)
+                {
+                    var updateTask = r.Parameters.GetValue<ToDoTask>("UpdateTask");
+                    UpdateTasks(updateTask);
+                }
+            });
+            SelectedTask = null;
         }
 
         /// <summary>
@@ -250,7 +274,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             {
                 { "Categories", Categories },
                 { "Statuses", Statuses },
-                { "Task", SelectedTask },
+                { "Task", new ToDoTask(SelectedTask) },
             };
             _dialogService.ShowDialog("TaskDialog", param, r =>
             {
@@ -260,6 +284,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                     UpdateTasks(updateTask);
                 }
             });
+            SelectedTask = null;
         }
         /// <summary>
         /// 
@@ -293,25 +318,21 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <param name="targetTask"></param>
         private void UpdateTasks(ToDoTask targetTask)
         {
-            // 区分を更新
-            var previousCategory = Categories.FirstOrDefault(item => item.Equals(targetTask.Category));
-            if (previousCategory != null)
+            // 区分を新規追加
+            if (Categories.FirstOrDefault(item => item.Equals(targetTask.Category)) == null)
             {
-                _ = Categories.Remove(previousCategory);
+                Categories.Add(targetTask.Category);
+                Categories = Categories.SortCollection();
+                File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
             }
-            Categories.Add(targetTask.Category);
-            Categories = SortCollection(Categories);
-            File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
 
-            // 状況を更新
-            var previousStatus = Statuses.FirstOrDefault(item => item.Equals(targetTask.Status));
-            if (previousStatus != null)
+            // 状況を新規追加
+            if (Statuses.FirstOrDefault(item => item.Equals(targetTask.Status)) == null)
             {
-                _ = Statuses.Remove(previousStatus);
+                Statuses.Add(targetTask.Status);
+                Statuses = Statuses.SortCollection();
+                File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
             }
-            Statuses.Add(targetTask.Status);
-            Statuses = SortCollection(Statuses);
-            File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
 
             // タスクを更新
             var previousTask = Tasks.FirstOrDefault(item => item.Equals(targetTask));
@@ -320,21 +341,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 _ = Tasks.Remove(previousTask);
             }
             Tasks.Add(targetTask);
-            Tasks = SortCollection(Tasks);
+            Tasks = Tasks.SortCollection();
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
-        }
-
-        /// <summary>
-        /// コレクションをソートする
-        /// </summary>
-        /// <typeparam name="T">型</typeparam>
-        /// <param name="source">ソート前のコレクション</param>
-        /// <returns>ソート後のコレクション</returns>
-        private static ObservableCollection<T> SortCollection<T>(ObservableCollection<T> source) where T : class
-        {
-            var list = source.ToList();
-            list.Sort();
-            return new ObservableCollection<T>(list);
         }
     }
 }

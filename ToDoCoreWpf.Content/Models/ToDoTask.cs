@@ -112,7 +112,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
         }
 
-        private DateTime _updated;
+        private DateTime _updated = DateTime.Now;
         /// <summary>
         /// 更新日時
         /// </summary>
@@ -206,8 +206,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         public ToDoTask(ToDoTask source)
         {
             Guid = source.Guid;
-            Category = source.Category;
-            Status = source.Status;
+            Category = new ToDoCategory(source.Category);
+            Status = new ToDoStatus(source.Status);
             Priority = source.Priority;
             Created = source.Created;
             Updated = source.Updated;
@@ -268,17 +268,23 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
 
             // 優先度が同じ場合、状況で比較
-            ret = Status.Order.CompareTo(other.Status.Order);
-            if (ret != 0)
+            if (Status != null && other.Status != null)
             {
-                return ret;
+                ret = Status.Order.CompareTo(other.Status.Order);
+                if (ret != 0)
+                {
+                    return ret;
+                }
             }
 
             // 状況が同じ場合、区分で比較
-            ret = Category.Order.CompareTo(other.Category.Order);
-            if (ret != 0)
+            if (Category != null && other.Category != null)
             {
-                return ret;
+                ret = Category.Order.CompareTo(other.Category.Order);
+                if (ret != 0)
+                {
+                    return ret;
+                }
             }
 
             // 区分が同じ場合、タイトルで比較

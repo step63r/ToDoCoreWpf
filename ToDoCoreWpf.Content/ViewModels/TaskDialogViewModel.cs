@@ -9,7 +9,7 @@ using System.Linq;
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
     /// <summary>
-    /// 
+    /// TaskDialog.xamlのViewModelクラス
     /// </summary>
     public class TaskDialogViewModel : BindableBase, IDialogAware
     {
@@ -88,7 +88,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         {
             // コマンドの登録
             OkCommand = new DelegateCommand(ExecuteOkCommand, CanExecuteOkCommand)
-                .ObservesProperty(() => Task);
+                .ObservesProperty(() => Task.Title);
             CancelCommand = new DelegateCommand(ExecuteCancelCommand);
         }
         #endregion
@@ -104,9 +104,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 var category = Categories.FirstOrDefault(item => item.Name.Equals(Task.Category.Name));
                 if (category == null)
                 {
+                    int order = Categories.Count == 0 ? 0 : Categories.Max(item => item.Order) + 1;
                     category = new ToDoCategory()
                     {
-                        Order = Categories.Max(item => item.Order) + 1,
+                        Order = order,
                         Name = Task.Category.Name
                     };
                 }
@@ -118,14 +119,17 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 var status = Statuses.FirstOrDefault(item => item.Name.Equals(Task.Status.Name));
                 if (status == null)
                 {
+                    int order = Statuses.Count == 0 ? 0 : Statuses.Max(item => item.Order) + 1;
                     status = new ToDoStatus()
                     {
-                        Order = Statuses.Max(item => item.Order) + 1,
+                        Order = order,
                         Name = Task.Status.Name
                     };
                 }
                 Task.Status = status;
             }
+
+            Task.Updated = DateTime.Now;
 
             var param = new DialogParameters()
             {
@@ -159,8 +163,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             Task = parameters.GetValue<ToDoTask>("Task");
             if (Task != null)
             {
-                _currentCategory = Task.Category;
-                _currentStatus = Task.Status;
+                _currentCategory = new ToDoCategory(Task.Category);
+                _currentStatus = new ToDoStatus(Task.Status);
             }
 
             Categories = parameters.GetValue<ObservableCollection<ToDoCategory>>("Categories");

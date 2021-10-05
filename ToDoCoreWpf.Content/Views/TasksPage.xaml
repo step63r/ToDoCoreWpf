@@ -16,6 +16,9 @@
         <conv:EnumConverter x:Key="EnumConverter" />
         <conv:IsPastDayConverter x:Key="IsPastDayConverter" />
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Command="{Binding CreateNewCommand}" Gesture="Ctrl+N" />
+    </UserControl.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
@@ -29,16 +32,20 @@
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="0">
                 <Menu>
-                    <MenuItem Header="ファイル(_F)">
-                        <MenuItem Header="終了" Icon="{materialDesign:PackIcon Kind=ExitToApp}" />
+                    <MenuItem Header="File(_F)">
+                        <MenuItem Header="Exit App(_Q)" Command="{Binding ShutdownCommand}" Icon="{materialDesign:PackIcon Kind=ExitToApp}" />
                     </MenuItem>
-                    <MenuItem Header="編集(_E)">
-                        <MenuItem Header="新規タスク" Command="{Binding CreateNewCommand}" />
+                    <MenuItem Header="Edit(_E)">
+                        <MenuItem Header="New Task(_N)..." Command="{Binding CreateNewCommand}" Icon="{materialDesign:PackIcon Kind=PlaylistPlus}" InputGestureText="Ctrl+N" />
                     </MenuItem>
-                    <MenuItem Header="オプション(_O)">
-                        
+                    <MenuItem Header="Option(_O)">
+                        <MenuItem Header="Configure Category(_C)..." Icon="{materialDesign:PackIcon Kind=Cog}" />
+                        <MenuItem Header="Configure Status(_S)..." Icon="{materialDesign:PackIcon Kind=Cog}" />
+                        <MenuItem Header="Configure Style(_T)..." Icon="{materialDesign:PackIcon Kind=Palette}" />
                     </MenuItem>
-                    <MenuItem Header="ヘルプ(_H)" />
+                    <MenuItem Header="Help(_H)">
+                        <MenuItem Header="About ToDo Core Wpf(_A)..." Icon="{materialDesign:PackIcon Kind=InformationCircleOutline}" />
+                    </MenuItem>
                 </Menu>
             </Grid>
             <Grid Grid.Column="1" Margin="8">
@@ -51,57 +58,62 @@
                 </Grid>
                 <Grid Grid.Column="1">
                     <TextBox Text="{Binding SearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center"
-                             materialDesign:HintAssist.Hint="タスクを検索" materialDesign:TextFieldAssist.HasClearButton="True" />
+                             materialDesign:HintAssist.Hint="Find task..." materialDesign:TextFieldAssist.HasClearButton="True" />
 
                 </Grid>
             </Grid>
         </Grid>
 
         <Grid Grid.Row="1" Margin="8">
-            <DataGrid ItemsSource="{Binding FilteredTasks}" SelectedItem="{Binding SelectedTask}" SelectionMode="Single"
-                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True"
-                      VirtualizingPanel.ScrollUnit="Pixel">
-                <DataGrid.InputBindings>
-                    <KeyBinding Key="Return" Command="{Binding ShowTaskCommand}" />
+            <ListView ItemsSource="{Binding FilteredTasks}" SelectedItem="{Binding SelectedTask}" Style="{StaticResource MaterialDesignListView}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="MouseDoubleClick">
+                        <i:InvokeCommandAction Command="{Binding ShowTaskCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <ListView.InputBindings>
                     <KeyBinding Key="Delete" Command="{Binding RemoveTaskCommand}" />
-                </DataGrid.InputBindings>
-                <DataGrid.ItemContainerStyle>
-                    <Style TargetType="{x:Type DataGridRow}">
+                </ListView.InputBindings>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource MaterialDesignGridViewItem}">
                         <Style.Triggers>
-                            <!-- 優先度：高 -->
                             <DataTrigger Binding="{Binding Path=Priority}" Value="{x:Static model:ToDoPriority.High}">
                                 <Setter Property="Background" Value="Yellow" />
                             </DataTrigger>
-                            <!-- 優先度：低 -->
                             <DataTrigger Binding="{Binding Path=Priority}" Value="{x:Static model:ToDoPriority.Low}">
                                 <Setter Property="Foreground" Value="DarkGray" />
                             </DataTrigger>
-                            <!-- 期限超過 -->
                             <DataTrigger Binding="{Binding Path=DueDate, Converter={StaticResource IsPastDayConverter}}" Value="True">
                                 <Setter Property="Foreground" Value="Red" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </DataGrid.ItemContainerStyle>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding Priority}" Header="Priority" />
+                        <GridViewColumn DisplayMemberBinding="{Binding Category.Name}" Header="Category" />
+                        <GridViewColumn DisplayMemberBinding="{Binding Status.Name}" Header="Status" />
+                        <GridViewColumn DisplayMemberBinding="{Binding DueDate, StringFormat=yyyy/MM/dd}" Header="Due Date" />
+                        <GridViewColumn DisplayMemberBinding="{Binding Title}" Header="Title" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <!--<DataGrid ItemsSource="{Binding FilteredTasks}" SelectedItem="{Binding SelectedTask}" SelectionMode="Single" SelectionUnit="FullRow"
+                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True"
+                      VirtualizingPanel.ScrollUnit="Pixel">
                 <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="SourceUpdated">
+                    --><!--<i:EventTrigger EventName="SourceUpdated">
                         <prism:InvokeCommandAction Command="{Binding OnSourceUpdatedCommand}" />
                     </i:EventTrigger>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding OnSelectionChangedCommand}" />
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <i:InvokeCommandAction Command="{Binding ShowTaskCommand}" />
-                    </i:EventTrigger>
+                    </i:EventTrigger>--><!--
                 </i:Interaction.Triggers>
                 <DataGrid.Columns>
-                    <materialDesign:DataGridComboBoxColumn Header="優先度" ItemsSourceBinding="{Binding Source={ext:EnumBindingSource EnumType={x:Type model:ToDoPriority}}}" SelectedItemBinding="{Binding Priority, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="区分" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Category.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="状況" EditingElementStyle="{StaticResource MaterialDesignDataGridComboBoxEditableTextBox}" Binding="{Binding Status.Name, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="期限" Binding="{Binding DueDate, StringFormat=yyyy/MM/dd, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
-                    <materialDesign:DataGridTextColumn Header="タイトル" Binding="{Binding Title, NotifyOnSourceUpdated=True, UpdateSourceTrigger=LostFocus}" />
+                    <DataGridTextColumn Header="タイトル" Binding="{Binding Title}" IsReadOnly="True" />
                 </DataGrid.Columns>
-            </DataGrid>
+            </DataGrid>-->
         </Grid>
     </Grid>
 </UserControl>
