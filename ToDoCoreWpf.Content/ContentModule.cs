@@ -3,7 +3,6 @@ using MinatoProject.Apps.ToDoCoreWpf.Content.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
-//using MinatoProject.Apps.ToDoCoreWpf.Content.Views;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content
 {
@@ -26,6 +25,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<TaskDialog, TaskDialogViewModel>();
+            containerRegistry.RegisterDialog<ConfigureCategoryDialog, ConfigureCategoryDialogViewModel>();
+            containerRegistry.RegisterDialog<ConfigureStatusDialog, ConfigureStatusDialogViewModel>();
+            containerRegistry.RegisterDialog<ConfigureStyleDialog, ConfigureStyleDialogViewModel>();
         }
     }
 }

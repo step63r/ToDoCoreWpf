@@ -39,9 +39,9 @@
                         <MenuItem Header="New Task(_N)..." Command="{Binding CreateNewCommand}" Icon="{materialDesign:PackIcon Kind=PlaylistPlus}" InputGestureText="Ctrl+N" />
                     </MenuItem>
                     <MenuItem Header="Option(_O)">
-                        <MenuItem Header="Configure Category(_C)..." Icon="{materialDesign:PackIcon Kind=Cog}" />
-                        <MenuItem Header="Configure Status(_S)..." Icon="{materialDesign:PackIcon Kind=Cog}" />
-                        <MenuItem Header="Configure Style(_T)..." Icon="{materialDesign:PackIcon Kind=Palette}" />
+                        <MenuItem Header="Configure Category(_C)..." Command="{Binding ConfigureCategoryCommand}" Icon="{materialDesign:PackIcon Kind=Cog}" />
+                        <MenuItem Header="Configure Status(_S)..." Command="{Binding ConfigureStatusCommand}" Icon="{materialDesign:PackIcon Kind=Cog}" />
+                        <MenuItem Header="Configure Style(_T)..." Command="{Binding ConfigureStyleCommand}" Icon="{materialDesign:PackIcon Kind=Palette}" />
                     </MenuItem>
                     <MenuItem Header="Help(_H)">
                         <MenuItem Header="About ToDo Core Wpf(_A)..." Icon="{materialDesign:PackIcon Kind=InformationCircleOutline}" />
@@ -99,21 +99,11 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <!--<DataGrid ItemsSource="{Binding FilteredTasks}" SelectedItem="{Binding SelectedTask}" SelectionMode="Single" SelectionUnit="FullRow"
-                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True"
-                      VirtualizingPanel.ScrollUnit="Pixel">
-                <i:Interaction.Triggers>
-                    --><!--<i:EventTrigger EventName="SourceUpdated">
-                        <prism:InvokeCommandAction Command="{Binding OnSourceUpdatedCommand}" />
-                    </i:EventTrigger>
-                    <i:EventTrigger EventName="SelectionChanged">
-                        <i:InvokeCommandAction Command="{Binding OnSelectionChangedCommand}" />
-                    </i:EventTrigger>--><!--
-                </i:Interaction.Triggers>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="タイトル" Binding="{Binding Title}" IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>-->
+            <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8">
+                <Button Command="{Binding CreateNewCommand}" Style="{StaticResource MaterialDesignFloatingActionButton}" Margin="0 4" materialDesign:ShadowAssist.ShadowDepth="Depth3">
+                    <materialDesign:PackIcon Kind="Plus" Width="24" Height="24" />
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

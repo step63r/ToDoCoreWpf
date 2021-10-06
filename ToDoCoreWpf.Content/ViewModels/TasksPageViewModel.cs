@@ -16,7 +16,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
     public class TasksPageViewModel : BindableBase
     {
         #region プロパティ
-        private ObservableCollection<ToDoCategory> _categories = new ObservableCollection<ToDoCategory>();
+        private ObservableCollection<ToDoCategory> _categories = new();
         /// <summary>
         /// 区分一覧
         /// </summary>
@@ -26,7 +26,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             set => _ = SetProperty(ref _categories, value);
         }
 
-        private ObservableCollection<ToDoStatus> _statuses = new ObservableCollection<ToDoStatus>();
+        private ObservableCollection<ToDoStatus> _statuses = new();
         /// <summary>
         /// 状況一覧
         /// </summary>
@@ -36,7 +36,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             set => _ = SetProperty(ref _statuses, value);
         }
 
-        private ObservableCollection<ToDoTask> _tasks = new ObservableCollection<ToDoTask>();
+        private ObservableCollection<ToDoTask> _tasks = new();
         /// <summary>
         /// タスク一覧
         /// </summary>
@@ -110,19 +110,23 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        public DelegateCommand ConfigureCategoryCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public DelegateCommand ConfigureStatusCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public DelegateCommand ConfigureStyleCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DelegateCommand ShowTaskCommand { get; private set; }
         /// <summary>
         /// 
         /// </summary>
         public DelegateCommand RemoveTaskCommand { get; private set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public DelegateCommand OnSourceUpdatedCommand { get; private set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public DelegateCommand OnSelectionChangedCommand { get; private set; }
         #endregion
 
         #region インターフェイス
@@ -145,11 +149,6 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 
         /// </summary>
         private static readonly string _tasksFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\tasks.json";
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private ToDoTask _currentSelectedTask;
         #endregion
 
         #region コンストラクタ
@@ -184,59 +183,15 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             // コマンドの登録
             ShutdownCommand = new DelegateCommand(ExecuteShutdownCommand);
             CreateNewCommand = new DelegateCommand(ExecuteCreateNewCommand);
+            ConfigureCategoryCommand = new DelegateCommand(ExecuteConfigureCategoryCommand);
+            ConfigureStatusCommand = new DelegateCommand(ExecuteConfigureStatusCommand);
+            ConfigureStyleCommand = new DelegateCommand(ExecuteConfigureStyleCommand);
             ShowTaskCommand = new DelegateCommand(ExecuteShowTaskCommand, CanExecuteShowTaskCommand)
                 .ObservesProperty(() => SelectedTask);
             RemoveTaskCommand = new DelegateCommand(ExecuteRemoveTaskCommand, CanExecuteRemoveTaskCommand)
                 .ObservesProperty(() => SelectedTask);
-            OnSourceUpdatedCommand = new DelegateCommand(ExecuteOnSourceUpdatedCommand);
-            OnSelectionChangedCommand = new DelegateCommand(ExecuteOnSelectionChangedCommand);
         }
         #endregion
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void ExecuteOnSourceUpdatedCommand()
-        {
-            // 区分と状況の名前が変更されていたら新しいインスタンスに差し替える
-            if (!_currentSelectedTask.Category.Name.Equals(SelectedTask.Category.Name))
-            {
-                var category = Categories.FirstOrDefault(item => item.Name.Equals(SelectedTask.Category.Name));
-                if (category == null)
-                {
-                    category = new ToDoCategory()
-                    {
-                        Order = Categories.Max(item => item.Order) + 1,
-                        Name = SelectedTask.Category.Name
-                    };
-                }
-                SelectedTask.Category = category;
-            }
-
-            if (!_currentSelectedTask.Status.Name.Equals(SelectedTask.Status.Name))
-            {
-                var status = Statuses.FirstOrDefault(item => item.Name.Equals(SelectedTask.Status.Name));
-                if (status == null)
-                {
-                    status = new ToDoStatus()
-                    {
-                        Order = Statuses.Max(item => item.Order) + 1,
-                        Name = SelectedTask.Status.Name
-                    };
-                }
-                SelectedTask.Status = status;
-            }
-
-            UpdateTasks(SelectedTask);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void ExecuteOnSelectionChangedCommand()
-        {
-            _currentSelectedTask = SelectedTask;
-        }
 
         private void ExecuteShutdownCommand()
         {
@@ -263,6 +218,47 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 }
             });
             SelectedTask = null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ExecuteConfigureCategoryCommand()
+        {
+            var param = new DialogParameters
+            {
+                { "Categories", Categories.ToList() },
+            };
+            _dialogService.ShowDialog("ConfigureCategoryDialog", param, null);
+            Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ExecuteConfigureStatusCommand()
+        {
+            var param = new DialogParameters
+            {
+                { "Statuses", Statuses.ToList() },
+            };
+            _dialogService.ShowDialog("ConfigureStatusDialog", param, null);
+            Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ExecuteConfigureStyleCommand()
+        {
+            var param = new DialogParameters
+            {
+                { "Categories", Categories.ToList() },
+                { "Statuses", Statuses.ToList() },
+            };
+            _dialogService.ShowDialog("ConfigureStyleDialog", param, null);
+            Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath));
+            Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath));
         }
 
         /// <summary>

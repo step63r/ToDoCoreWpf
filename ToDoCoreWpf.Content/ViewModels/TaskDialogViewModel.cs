@@ -13,20 +13,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
     /// </summary>
     public class TaskDialogViewModel : BindableBase, IDialogAware
     {
-
-        #region IDialogAware
-        /// <summary>
-        /// IDialogAware
-        /// </summary>
-        public event Action<IDialogResult> RequestClose;
-        #endregion
-
         #region プロパティ
-        /// <summary>
-        /// 
-        /// </summary>
-        public string Title => Task?.Title;
-
         private ToDoTask _task;
         /// <summary>
         /// 
@@ -67,6 +54,52 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 
         /// </summary>
         public DelegateCommand CancelCommand { get; private set; }
+        #endregion
+
+        #region IDialogAware
+        /// <summary>
+        /// ダイアログのタイトル
+        /// </summary>
+        public string Title => Task?.Title;
+
+        /// <summary>
+        /// ダイアログ結果
+        /// </summary>
+        public event Action<IDialogResult> RequestClose;
+
+        /// <summary>
+        /// ダイアログを閉じることができるかどうかを判定する
+        /// </summary>
+        /// <returns></returns>
+        public bool CanCloseDialog()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// ダイアログが閉じたときのイベントハンドラ
+        /// </summary>
+        public void OnDialogClosed()
+        {
+
+        }
+
+        /// <summary>
+        /// ダイアログが開いたときのイベントハンドラ
+        /// </summary>
+        /// <param name="parameters"></param>
+        public void OnDialogOpened(IDialogParameters parameters)
+        {
+            Task = parameters.GetValue<ToDoTask>("Task");
+            if (Task != null)
+            {
+                _currentCategory = new ToDoCategory(Task.Category);
+                _currentStatus = new ToDoStatus(Task.Status);
+            }
+
+            Categories = parameters.GetValue<ObservableCollection<ToDoCategory>>("Categories");
+            Statuses = parameters.GetValue<ObservableCollection<ToDoStatus>>("Statuses");
+        }
         #endregion
 
         #region メンバ変数
@@ -152,40 +185,6 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         private void ExecuteCancelCommand()
         {
             RequestClose?.Invoke(new DialogResult(ButtonResult.Cancel));
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="parameters"></param>
-        public void OnDialogOpened(IDialogParameters parameters)
-        {
-            Task = parameters.GetValue<ToDoTask>("Task");
-            if (Task != null)
-            {
-                _currentCategory = new ToDoCategory(Task.Category);
-                _currentStatus = new ToDoStatus(Task.Status);
-            }
-
-            Categories = parameters.GetValue<ObservableCollection<ToDoCategory>>("Categories");
-            Statuses = parameters.GetValue<ObservableCollection<ToDoStatus>>("Statuses");
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool CanCloseDialog()
-        {
-            return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public void OnDialogClosed()
-        {
-
         }
     }
 }

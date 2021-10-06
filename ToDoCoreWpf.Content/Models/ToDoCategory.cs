@@ -71,6 +71,46 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
                 RaisePropertyChanged(nameof(Name));
             }
         }
+
+        private string _foregroundColorHex = string.Empty;
+        /// <summary>
+        /// 前景色
+        /// </summary>
+        [DataMember]
+        public string ForegroundColorHex
+        {
+            get => _foregroundColorHex;
+            set
+            {
+                if (value == _foregroundColorHex)
+                {
+                    return;
+                }
+                _foregroundColorHex = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(ForegroundColorHex));
+            }
+        }
+
+        private string _backgroundColorHex = string.Empty;
+        /// <summary>
+        /// 背景色
+        /// </summary>
+        [DataMember]
+        public string BackgroundColorHex
+        {
+            get => _backgroundColorHex;
+            set
+            {
+                if (value == _backgroundColorHex)
+                {
+                    return;
+                }
+                _backgroundColorHex = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(BackgroundColorHex));
+            }
+        }
         #endregion
 
         #region コンストラクタ
