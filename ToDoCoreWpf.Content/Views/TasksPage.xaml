@@ -90,14 +90,11 @@
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Path=Priority}" Value="{x:Static model:ToDoPriority.High}">
                                 <Setter Property="Background" Value="Yellow" />
-                                <Setter Property="Foreground" Value="{Binding Path=Status.ForegroundColorHex}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Path=Priority}" Value="{x:Static model:ToDoPriority.Low}">
                                 <Setter Property="Foreground" Value="DarkGray" />
-                                <Setter Property="Foreground" Value="{Binding Path=Status.ForegroundColorHex}" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Path=DueDate, Converter={StaticResource IsPastDayConverter}}" Value="True">
-                                <Setter Property="Background" Value="{Binding Path=Status.BackgroundColorHex}" />
                                 <Setter Property="Foreground" Value="Red" />
                             </DataTrigger>
                         </Style.Triggers>

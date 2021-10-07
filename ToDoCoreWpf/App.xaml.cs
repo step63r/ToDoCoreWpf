@@ -6,6 +6,7 @@ using Prism.Modularity;
 using MinatoProject.Apps.ToDoCoreWpf.Content;
 using System;
 using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace MinatoProject.Apps.ToDoCoreWpf
 {
