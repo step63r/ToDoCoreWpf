@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using MinatoProject.Apps.ToDoCoreWpf.Native;
+using System.Windows;
+using static MinatoProject.Apps.ToDoCoreWpf.Native.InterceptKeyboard;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Views
 {
@@ -7,6 +9,13 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region メンバ変数
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly InterceptKeyboard _interceptKeyboard = new();
+        #endregion
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -14,6 +23,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
         {
             InitializeComponent();
             LoadWindowBounds();
+
+            _interceptKeyboard.KeyDownEvent += OnKeyDown;
+            _interceptKeyboard.Hook();
         }
 
         /// <summary>
@@ -38,6 +50,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
             {
                 e.Cancel = false;
                 Properties.Settings.Default.Save();
+                _interceptKeyboard.KeyDownEvent -= OnKeyDown;
             }
         }
 
@@ -75,6 +88,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
         {
             Properties.Settings.Default.Save();
             Application.Current.Shutdown();
+            _interceptKeyboard.KeyDownEvent -= OnKeyDown;
         }
 
         /// <summary>
@@ -118,6 +132,39 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
             if (settings.WindowState == WindowState.Maximized)
             {
                 Loaded += (sender, e) => WindowState = WindowState.Maximized;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnKeyDown(object sender, OriginalKeyEventArg e)
+        {
+            if (e.KeyCode == 0xA1)  // VK_RSHIFT
+            {
+                if (!IsVisible)
+                {
+                    Show();
+                }
+
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = WindowState.Normal;
+                }
+
+                if (!ShowInTaskbar)
+                {
+                    taskbarIcon.Visibility = Visibility.Collapsed;
+                    ShowInTaskbar = true;
+                    WindowState = WindowState.Normal;
+                }
+
+                _ = Activate();
+                Topmost = true;
+                Topmost = false;
+                _ = Focus();
             }
         }
     }

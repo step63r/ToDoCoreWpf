@@ -16,7 +16,7 @@
         Closing="Window_Closing"
         StateChanged="Window_StateChanged">
     <Grid>
-        <tb:TaskbarIcon x:Name="taskbarIcon" ToolTipText="ToDo Core Wpf" Visibility="Collapsed">
+        <tb:TaskbarIcon x:Name="taskbarIcon" IconSource="/ToDoCoreWpf;component/Resources/ToDoCoreWpf.ico" ToolTipText="ToDo Core Wpf" Visibility="Collapsed">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="ShowWindowMenuItem" Header="Show Window" Click="ShowWindowMenuItem_Click" />

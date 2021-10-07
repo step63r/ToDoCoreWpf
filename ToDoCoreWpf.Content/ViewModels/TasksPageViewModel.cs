@@ -318,6 +318,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             // 区分を新規追加
             if (Categories.FirstOrDefault(item => item.Equals(targetTask.Category)) == null)
             {
+                if (Categories.FirstOrDefault(item => item.Name.Equals(targetTask.Category.Name)) != null)
+                {
+                    Console.WriteLine("Categories 不一致");
+                }
                 Categories.Add(targetTask.Category);
                 Categories = Categories.SortCollection();
                 File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
@@ -326,6 +330,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             // 状況を新規追加
             if (Statuses.FirstOrDefault(item => item.Equals(targetTask.Status)) == null)
             {
+                if (Statuses.FirstOrDefault(item => item.Name.Equals(targetTask.Status.Name)) != null)
+                {
+                    Console.WriteLine("Statuses 不一致");
+                }
                 Statuses.Add(targetTask.Status);
                 Statuses = Statuses.SortCollection();
                 File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));

@@ -128,6 +128,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             Guid = source.Guid;
             Order = source.Order;
             Name = source.Name;
+            ForegroundColorHex = source.ForegroundColorHex;
+            BackgroundColorHex = source.BackgroundColorHex;
         }
         #endregion
 

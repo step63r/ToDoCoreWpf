@@ -7,6 +7,7 @@ using MinatoProject.Apps.ToDoCoreWpf.Content;
 using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace MinatoProject.Apps.ToDoCoreWpf
 {

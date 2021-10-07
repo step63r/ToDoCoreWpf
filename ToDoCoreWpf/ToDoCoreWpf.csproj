@@ -5,7 +5,15 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>ToDoCoreWpf</AssemblyName>
     <RootNamespace>MinatoProject.Apps.ToDoCoreWpf</RootNamespace>
+    <ApplicationIcon>Resources\ToDoCoreWpf.ico</ApplicationIcon>
+    <Win32Resource />
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Resources\ToDoCoreWpf.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ToDoCoreWpf.ico" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
@@ -17,11 +25,22 @@
     <ProjectReference Include="..\ToDoCoreWpf.Content\ToDoCoreWpf.Content.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">
