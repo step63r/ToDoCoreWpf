@@ -298,6 +298,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         {
             _ = Tasks.Remove(SelectedTask);
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
+            Tasks = Tasks.SortCollection();
         }
         /// <summary>
         /// 
