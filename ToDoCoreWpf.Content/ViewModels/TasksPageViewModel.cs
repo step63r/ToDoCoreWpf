@@ -122,6 +122,14 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        public DelegateCommand ApplicationPreferenceCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public DelegateCommand AboutCommand { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public DelegateCommand ShowTaskCommand { get; private set; }
         /// <summary>
         /// 
@@ -186,6 +194,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             ConfigureCategoryCommand = new DelegateCommand(ExecuteConfigureCategoryCommand);
             ConfigureStatusCommand = new DelegateCommand(ExecuteConfigureStatusCommand);
             ConfigureStyleCommand = new DelegateCommand(ExecuteConfigureStyleCommand);
+            ApplicationPreferenceCommand = new DelegateCommand(ExecuteApplicationPreferenceCommand);
+            AboutCommand = new DelegateCommand(ExecuteAboutCommand);
             ShowTaskCommand = new DelegateCommand(ExecuteShowTaskCommand, CanExecuteShowTaskCommand)
                 .ObservesProperty(() => SelectedTask);
             RemoveTaskCommand = new DelegateCommand(ExecuteRemoveTaskCommand, CanExecuteRemoveTaskCommand)
@@ -264,6 +274,34 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <summary>
         /// 
         /// </summary>
+        private void ExecuteApplicationPreferenceCommand()
+        {
+            // TODO: MainWindowからアプリケーション設定を受け取る
+            var param = new DialogParameters
+            {
+                { "ExitAsMinimized", false },
+                { "FocusKeys", new int[]{ 0xA1 } }
+            };
+            _dialogService.ShowDialog("ApplicationPreferenceDialog", param, r =>
+            {
+                if (r.Result == ButtonResult.OK)
+                {
+                    // TODO: MainWindowにアプリケーション設定を渡す
+                }
+            });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void ExecuteAboutCommand()
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private void ExecuteShowTaskCommand()
         {
             var param = new DialogParameters
@@ -318,10 +356,6 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             // 区分を新規追加
             if (Categories.FirstOrDefault(item => item.Equals(targetTask.Category)) == null)
             {
-                if (Categories.FirstOrDefault(item => item.Name.Equals(targetTask.Category.Name)) != null)
-                {
-                    Console.WriteLine("Categories 不一致");
-                }
                 Categories.Add(targetTask.Category);
                 Categories = Categories.SortCollection();
                 File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
@@ -330,10 +364,6 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             // 状況を新規追加
             if (Statuses.FirstOrDefault(item => item.Equals(targetTask.Status)) == null)
             {
-                if (Statuses.FirstOrDefault(item => item.Name.Equals(targetTask.Status.Name)) != null)
-                {
-                    Console.WriteLine("Statuses 不一致");
-                }
                 Statuses.Add(targetTask.Status);
                 Statuses = Statuses.SortCollection();
                 File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));

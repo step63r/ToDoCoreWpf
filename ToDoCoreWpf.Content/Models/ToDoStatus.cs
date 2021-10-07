@@ -20,7 +20,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         public Guid Guid
         {
             get => _guid;
-            private set
+            set
             {
                 if (value == _guid)
                 {

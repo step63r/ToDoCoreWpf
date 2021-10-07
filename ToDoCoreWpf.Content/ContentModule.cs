@@ -28,6 +28,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content
             containerRegistry.RegisterDialog<ConfigureCategoryDialog, ConfigureCategoryDialogViewModel>();
             containerRegistry.RegisterDialog<ConfigureStatusDialog, ConfigureStatusDialogViewModel>();
             containerRegistry.RegisterDialog<ConfigureStyleDialog, ConfigureStyleDialogViewModel>();
+            containerRegistry.RegisterDialog<ApplicationPreferenceDialog, ApplicationPreferenceDialogViewModel>();
         }
     }
 }
