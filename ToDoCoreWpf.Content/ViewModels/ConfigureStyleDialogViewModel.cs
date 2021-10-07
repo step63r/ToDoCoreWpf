@@ -68,7 +68,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public Color SelectedCategoryForeground
         {
             get => SelectedCategory == null || string.IsNullOrEmpty(SelectedCategory.ForegroundColorHex)
-                ? (Color)ColorConverter.ConvertFromString("#00000000")
+                ? (Color)ColorConverter.ConvertFromString("#FF000000")
                 : (Color)ColorConverter.ConvertFromString(SelectedCategory.ForegroundColorHex);
             set
             {
@@ -84,7 +84,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public Color SelectedCategoryBackground
         {
             get => SelectedCategory == null || string.IsNullOrEmpty(SelectedCategory.BackgroundColorHex)
-                ? (Color)ColorConverter.ConvertFromString("#FFFFFFFF")
+                ? (Color)ColorConverter.ConvertFromString("#00000000")
                 : (Color)ColorConverter.ConvertFromString(SelectedCategory.BackgroundColorHex);
             set
             {
@@ -100,7 +100,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public Color SelectedStatusForeground
         {
             get => SelectedStatus == null || string.IsNullOrEmpty(SelectedStatus.ForegroundColorHex)
-                ? (Color)ColorConverter.ConvertFromString("#00000000")
+                ? (Color)ColorConverter.ConvertFromString("#FF000000")
                 : (Color)ColorConverter.ConvertFromString(SelectedStatus.ForegroundColorHex);
             set
             {
@@ -116,7 +116,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public Color SelectedStatusBackground
         {
             get => SelectedStatus == null || string.IsNullOrEmpty(SelectedStatus.BackgroundColorHex)
-                    ? (Color)ColorConverter.ConvertFromString("#FFFFFFFF")
+                    ? (Color)ColorConverter.ConvertFromString("#00000000")
                     : (Color)ColorConverter.ConvertFromString(SelectedStatus.BackgroundColorHex);
             set
             {

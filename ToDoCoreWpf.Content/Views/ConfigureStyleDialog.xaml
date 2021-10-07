@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:colorPicker="clr-namespace:ColorPicker;assembly=ColorPicker"
              prism:ViewModelLocator.AutoWireViewModel="True">
     <prism:Dialog.WindowStyle>
         <Style TargetType="Window">
@@ -29,15 +30,16 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Category" VerticalAlignment="Center" Margin="4" />
         <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding Categories}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedCategory}" MinWidth="80" Margin="4" />
         <TextBlock Grid.Row="0" Grid.Column="2" Text="Foreground: " VerticalAlignment="Center" Margin="4" />
-        <materialDesign:ColorPicker Grid.Row="0" Grid.Column="3" MinWidth="120" Margin="4" />
+        <colorPicker:PortableColorPicker Grid.Row="0" Grid.Column="3" SelectedColor="{Binding SelectedCategoryForeground, Mode=TwoWay}" VerticalAlignment="Center" Margin="4" />
         <TextBlock Grid.Row="1" Grid.Column="2" Text="Background: " VerticalAlignment="Center" Margin="4" />
-        <materialDesign:ColorPicker Grid.Row="1" Grid.Column="3" MinWidth="120" Margin="4" />
+        <colorPicker:PortableColorPicker Grid.Row="1" Grid.Column="3" SelectedColor="{Binding SelectedCategoryBackground, Mode=TwoWay}" VerticalAlignment="Center" Margin="4" />
 
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Status" VerticalAlignment="Center" />
         <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Statuses}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedStatus}" MinWidth="80" Margin="4" />
         <TextBlock Grid.Row="2" Grid.Column="2" Text="Foreground: " VerticalAlignment="Center" Margin="4" />
-        <materialDesign:ColorPicker Grid.Row="2" Grid.Column="3" MinWidth="120" Margin="4" />
+        <colorPicker:PortableColorPicker Grid.Row="2" Grid.Column="3" SelectedColor="{Binding SelectedStatusForeground, Mode=TwoWay}" VerticalAlignment="Center" Margin="4" />
         <TextBlock Grid.Row="3" Grid.Column="2" Text="Background: " VerticalAlignment="Center" Margin="4" />
-        <materialDesign:ColorPicker Grid.Row="3" Grid.Column="3" MinWidth="120" Margin="4" />
+        <colorPicker:PortableColorPicker Grid.Row="3" Grid.Column="3" SelectedColor="{Binding SelectedStatusBackground, Mode=TwoWay}" VerticalAlignment="Center" Margin="4" />
     </Grid>
 </UserControl>
+    

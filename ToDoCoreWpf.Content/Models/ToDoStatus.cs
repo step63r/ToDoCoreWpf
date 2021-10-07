@@ -72,7 +72,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
         }
 
-        private string _foregroundColorHex = string.Empty;
+        private string _foregroundColorHex = "#FF000000";
         /// <summary>
         /// 前景色
         /// </summary>
@@ -92,7 +92,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
         }
 
-        private string _backgroundColorHex = string.Empty;
+        private string _backgroundColorHex = "#00000000";
         /// <summary>
         /// 背景色
         /// </summary>
