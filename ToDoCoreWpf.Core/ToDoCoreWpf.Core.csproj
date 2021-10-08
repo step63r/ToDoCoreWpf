@@ -4,11 +4,25 @@
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<RootNamespace>MinatoProject.Apps.ToDoCoreWpf.Core</RootNamespace>
 		<UseWindowsForms>true</UseWindowsForms>
+		<Version>2021.10.09.01</Version>
+		<Authors>minato</Authors>
+		<Company>minato project</Company>
+		<Copyright>Copyright © minato 2021</Copyright>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<NeutralLanguage>ja-JP</NeutralLanguage>
+		<Platforms>x86;x64</Platforms>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="NLog" Version="4.7.11" />
 	  <PackageReference Include="NLog.Extensions.Logging" Version="1.7.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\LICENSE">
+	    <Pack>True</Pack>
+	    <PackagePath></PackagePath>
+	  </None>
 	</ItemGroup>
 
 </Project>
