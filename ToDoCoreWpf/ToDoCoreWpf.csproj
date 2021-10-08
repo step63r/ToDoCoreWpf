@@ -19,10 +19,13 @@
     <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+    <PackageReference Include="NLog" Version="4.7.11" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.7.4" />
     <PackageReference Include="Prism.Unity" Version="8.0.0.1909" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ToDoCoreWpf.Content\ToDoCoreWpf.Content.csproj" />
+    <ProjectReference Include="..\ToDoCoreWpf.Core\ToDoCoreWpf.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -43,6 +46,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

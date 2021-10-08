@@ -1,5 +1,6 @@
 ﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Extensions;
 using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
+using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -13,6 +14,9 @@ using System.Windows;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
+    /// <summary>
+    /// TasksPage.xamlのViewModelクラス
+    /// </summary>
     public class TasksPageViewModel : BindableBase
     {
         #region プロパティ
@@ -100,39 +104,35 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 
         #region コマンド
         /// <summary>
-        /// 
+        /// アプリ終了コマンド
         /// </summary>
         public DelegateCommand ShutdownCommand { get; private set; }
         /// <summary>
-        /// 
+        /// タスク作成コマンド
         /// </summary>
         public DelegateCommand CreateNewCommand { get; private set; }
         /// <summary>
-        /// 
+        /// 区分設定コマンド
         /// </summary>
         public DelegateCommand ConfigureCategoryCommand { get; private set; }
         /// <summary>
-        /// 
+        /// 状況設定コマンド
         /// </summary>
         public DelegateCommand ConfigureStatusCommand { get; private set; }
         /// <summary>
-        /// 
+        /// スタイル設定コマンド
         /// </summary>
         public DelegateCommand ConfigureStyleCommand { get; private set; }
         /// <summary>
-        /// 
+        /// アプリケーション設定コマンド
         /// </summary>
         public DelegateCommand ApplicationPreferenceCommand { get; private set; }
         /// <summary>
-        /// 
-        /// </summary>
-        public DelegateCommand AboutCommand { get; private set; }
-        /// <summary>
-        /// 
+        /// タスク表示コマンド
         /// </summary>
         public DelegateCommand ShowTaskCommand { get; private set; }
         /// <summary>
-        /// 
+        /// タスク削除コマンド
         /// </summary>
         public DelegateCommand RemoveTaskCommand { get; private set; }
         #endregion
@@ -146,17 +146,21 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 
         #region メンバ変数
         /// <summary>
-        /// 
+        /// 区分一覧ファイルパス
         /// </summary>
         private static readonly string _categoriesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\categories.json";
         /// <summary>
-        /// 
+        /// 状況一覧ファイルパス
         /// </summary>
         private static readonly string _statusesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\statuses.json";
         /// <summary>
-        /// 
+        /// タスク一覧ファイルパス
         /// </summary>
         private static readonly string _tasksFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\tasks.json";
+        /// <summary>
+        /// ロガー
+        /// </summary>
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region コンストラクタ
@@ -166,6 +170,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <param name="dialogService">IDialogService</param>
         public TasksPageViewModel(IDialogService dialogService)
         {
+            _logger.Info("start");
             // ファイル作成＆読み込み
             if (!File.Exists(_categoriesFilePath))
             {
@@ -195,24 +200,30 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             ConfigureStatusCommand = new DelegateCommand(ExecuteConfigureStatusCommand);
             ConfigureStyleCommand = new DelegateCommand(ExecuteConfigureStyleCommand);
             ApplicationPreferenceCommand = new DelegateCommand(ExecuteApplicationPreferenceCommand);
-            AboutCommand = new DelegateCommand(ExecuteAboutCommand);
             ShowTaskCommand = new DelegateCommand(ExecuteShowTaskCommand, CanExecuteShowTaskCommand)
                 .ObservesProperty(() => SelectedTask);
             RemoveTaskCommand = new DelegateCommand(ExecuteRemoveTaskCommand, CanExecuteRemoveTaskCommand)
                 .ObservesProperty(() => SelectedTask);
+            _logger.Info("end");
         }
         #endregion
 
+        /// <summary>
+        /// アプリ終了コマンドを実行する
+        /// </summary>
         private void ExecuteShutdownCommand()
         {
+            _logger.Info("start");
             Application.Current.Shutdown();
+            _logger.Info("end");
         }
 
         /// <summary>
-        /// 
+        /// タスク作成コマンドを実行する
         /// </summary>
         private void ExecuteCreateNewCommand()
         {
+            _logger.Info("start");
             var param = new DialogParameters
             {
                 { "Categories", Categories },
@@ -228,39 +239,45 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 }
             });
             SelectedTask = null;
+            _logger.Info("end");
         }
 
         /// <summary>
-        /// 
+        /// 区分設定コマンドを実行する
         /// </summary>
         private void ExecuteConfigureCategoryCommand()
         {
+            _logger.Info("start");
             var param = new DialogParameters
             {
                 { "Categories", Categories.ToList() },
             };
             _dialogService.ShowDialog("ConfigureCategoryDialog", param, null);
             Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath));
+            _logger.Info("end");
         }
 
         /// <summary>
-        /// 
+        /// 状況設定コマンドを実行する
         /// </summary>
         private void ExecuteConfigureStatusCommand()
         {
+            _logger.Info("start");
             var param = new DialogParameters
             {
                 { "Statuses", Statuses.ToList() },
             };
             _dialogService.ShowDialog("ConfigureStatusDialog", param, null);
             Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath));
+            _logger.Info("end");
         }
 
         /// <summary>
-        /// 
+        /// スタイル設定コマンドを実行する
         /// </summary>
         private void ExecuteConfigureStyleCommand()
         {
+            _logger.Info("start");
             var param = new DialogParameters
             {
                 { "Categories", Categories.ToList() },
@@ -269,41 +286,25 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             _dialogService.ShowDialog("ConfigureStyleDialog", param, null);
             Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath));
             Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath));
+            _logger.Info("end");
         }
 
         /// <summary>
-        /// 
+        /// アプリケーション設定コマンドを実行する
         /// </summary>
         private void ExecuteApplicationPreferenceCommand()
         {
-            // TODO: MainWindowからアプリケーション設定を受け取る
-            var param = new DialogParameters
-            {
-                { "ExitAsMinimized", false },
-                { "FocusKeys", new int[]{ 0xA1 } }
-            };
-            _dialogService.ShowDialog("ApplicationPreferenceDialog", param, r =>
-            {
-                if (r.Result == ButtonResult.OK)
-                {
-                    // TODO: MainWindowにアプリケーション設定を渡す
-                }
-            });
+            _logger.Info("start");
+            _dialogService.ShowDialog("ApplicationPreferenceDialog", null, null);
+            _logger.Info("end");
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        private void ExecuteAboutCommand()
-        {
-
-        }
-
-        /// <summary>
-        /// 
+        /// タスク表示コマンドを実行する
         /// </summary>
         private void ExecuteShowTaskCommand()
         {
+            _logger.Info("start");
             var param = new DialogParameters
             {
                 { "Categories", Categories },
@@ -319,9 +320,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 }
             });
             SelectedTask = null;
+            _logger.Info("end");
         }
         /// <summary>
-        /// 
+        /// タスク作成コマンドが実行可能かどうかを判定する
         /// </summary>
         /// <returns></returns>
         private bool CanExecuteShowTaskCommand()
@@ -330,16 +332,18 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// タスク削除コマンドを実行する
         /// </summary>
         private void ExecuteRemoveTaskCommand()
         {
+            _logger.Info("start");
             _ = Tasks.Remove(SelectedTask);
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
             Tasks = Tasks.SortCollection();
+            _logger.Info("end");
         }
         /// <summary>
-        /// 
+        /// タスク削除コマンドが実行可能かどうかを判定する
         /// </summary>
         /// <returns></returns>
         private bool CanExecuteRemoveTaskCommand()
@@ -353,6 +357,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <param name="targetTask"></param>
         private void UpdateTasks(ToDoTask targetTask)
         {
+            _logger.Info("start");
             // 区分を新規追加
             if (Categories.FirstOrDefault(item => item.Equals(targetTask.Category)) == null)
             {
@@ -378,6 +383,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             Tasks.Add(targetTask);
             Tasks = Tasks.SortCollection();
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
+            _logger.Info("end");
         }
     }
 }

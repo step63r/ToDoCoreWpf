@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoCoreWpf", "ToDoCoreWpf\ToDoCoreWpf.csproj", "{9B3A0C6C-90A0-4F35-9994-8CC4CD5019CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoCoreWpf", "ToDoCoreWpf\ToDoCoreWpf.csproj", "{9B3A0C6C-90A0-4F35-9994-8CC4CD5019CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoCoreWpf.Content", "ToDoCoreWpf.Content\ToDoCoreWpf.Content.csproj", "{80A2DE86-7EFE-4FB5-B269-93D6C63383AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoCoreWpf.Content", "ToDoCoreWpf.Content\ToDoCoreWpf.Content.csproj", "{80A2DE86-7EFE-4FB5-B269-93D6C63383AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoCoreWpf.Core", "ToDoCoreWpf.Core\ToDoCoreWpf.Core.csproj", "{CF380428-0DB0-43B0-B4EA-573A551AC88A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{80A2DE86-7EFE-4FB5-B269-93D6C63383AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80A2DE86-7EFE-4FB5-B269-93D6C63383AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80A2DE86-7EFE-4FB5-B269-93D6C63383AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF380428-0DB0-43B0-B4EA-573A551AC88A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF380428-0DB0-43B0-B4EA-573A551AC88A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF380428-0DB0-43B0-B4EA-573A551AC88A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF380428-0DB0-43B0-B4EA-573A551AC88A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
 ﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
+using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -127,6 +128,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 状況一覧のファイルパス
         /// </summary>
         private static readonly string _statusesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\statuses.json";
+        /// <summary>
+        /// ロガー
+        /// </summary>
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region コンストラクタ
@@ -135,6 +140,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         public ConfigureStatusDialogViewModel()
         {
+            _logger.Info("start");
             // コマンドの登録
             AddCommand = new DelegateCommand(ExecuteAddCommand, CanExecuteAddCommand)
                 .ObservesProperty(() => NewStatus);
@@ -144,6 +150,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 .ObservesProperty(() => SelectedStatus);
             DownCommand = new DelegateCommand(ExecuteDownCommand, CanExecuteDownCommand)
                 .ObservesProperty(() => SelectedStatus);
+            _logger.Info("end");
         }
         #endregion
 
@@ -152,6 +159,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteAddCommand()
         {
+            _logger.Info("start");
             int order = Statuses.Count == 0 ? 0 : Statuses.Max(item => item.Order) + 1;
             NewStatus.Order = order;
             Statuses.Add(NewStatus);
@@ -159,6 +167,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             SelectedStatus = null;
             NewStatus = new ToDoStatus();
             RaisePropertyChanged(nameof(DisplayStatuses));
+            _logger.Info("end");
         }
         /// <summary>
         /// 追加コマンドが実行可能かどうかを判定する
@@ -175,9 +184,11 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteRemoveCommand()
         {
+            _logger.Info("start");
             _ = Statuses.Remove(SelectedStatus);
             File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
             RaisePropertyChanged(nameof(DisplayStatuses));
+            _logger.Info("end");
         }
         /// <summary>
         /// 削除コマンドが実行可能かどうかを判定する
@@ -193,6 +204,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteUpCommand()
         {
+            _logger.Info("start");
             int order = SelectedStatus.Order;
             var item = Statuses.FirstOrDefault(item => item.Order == order - 1);
             item.Order = order;
@@ -201,6 +213,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
             RaisePropertyChanged(nameof(SelectedStatus));
             RaisePropertyChanged(nameof(DisplayStatuses));
+            _logger.Info("end");
         }
         /// <summary>
         /// 上へコマンドが実行可能かどうかを判定する
@@ -217,6 +230,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteDownCommand()
         {
+            _logger.Info("start");
             int order = SelectedStatus.Order;
             var item = Statuses.FirstOrDefault(item => item.Order == order + 1);
             item.Order = order;
@@ -225,6 +239,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
             RaisePropertyChanged(nameof(SelectedStatus));
             RaisePropertyChanged(nameof(DisplayStatuses));
+            _logger.Info("end");
         }
         /// <summary>
         /// 下へコマンドが実行可能かどうかを判定する

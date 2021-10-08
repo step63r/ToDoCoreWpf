@@ -1,4 +1,5 @@
 ﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
+using NLog;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
@@ -127,6 +128,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 区分一覧のファイルパス
         /// </summary>
         private static readonly string _categoriesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\categories.json";
+        /// <summary>
+        /// ロガー
+        /// </summary>
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region コンストラクタ
@@ -135,6 +140,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         public ConfigureCategoryDialogViewModel()
         {
+            _logger.Info("start");
             // コマンドの登録
             AddCommand = new DelegateCommand(ExecuteAddCommand, CanExecuteAddCommand)
                 .ObservesProperty(() => NewCategory);
@@ -144,6 +150,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 .ObservesProperty(() => SelectedCategory);
             DownCommand = new DelegateCommand(ExecuteDownCommand, CanExecuteDownCommand)
                 .ObservesProperty(() => SelectedCategory);
+            _logger.Info("end");
         }
         #endregion
 
@@ -152,6 +159,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteAddCommand()
         {
+            _logger.Info("start");
             int order = Categories.Count == 0 ? 0 : Categories.Max(item => item.Order) + 1;
             NewCategory.Order = order;
             Categories.Add(NewCategory);
@@ -159,6 +167,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             SelectedCategory = null;
             NewCategory = new ToDoCategory();
             RaisePropertyChanged(nameof(DisplayCategories));
+            _logger.Info("end");
         }
         /// <summary>
         /// 追加コマンドが実行可能かどうかを判定する
@@ -175,9 +184,11 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteRemoveCommand()
         {
+            _logger.Info("start");
             _ = Categories.Remove(SelectedCategory);
             File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
             RaisePropertyChanged(nameof(DisplayCategories));
+            _logger.Info("end");
         }
         /// <summary>
         /// 削除コマンドが実行可能かどうかを判定する
@@ -193,6 +204,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteUpCommand()
         {
+            _logger.Info("start");
             int order = SelectedCategory.Order;
             var item = Categories.FirstOrDefault(item => item.Order == order - 1);
             item.Order = order;
@@ -201,6 +213,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
             RaisePropertyChanged(nameof(SelectedCategory));
             RaisePropertyChanged(nameof(DisplayCategories));
+            _logger.Info("end");
         }
         /// <summary>
         /// 上へコマンドが実行可能かどうかを判定する
@@ -217,6 +230,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         private void ExecuteDownCommand()
         {
+            _logger.Info("start");
             int order = SelectedCategory.Order;
             var item = Categories.FirstOrDefault(item => item.Order == order + 1);
             item.Order = order;
@@ -225,6 +239,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
             RaisePropertyChanged(nameof(SelectedCategory));
             RaisePropertyChanged(nameof(DisplayCategories));
+            _logger.Info("end");
         }
         /// <summary>
         /// 下へコマンドが実行可能かどうかを判定する

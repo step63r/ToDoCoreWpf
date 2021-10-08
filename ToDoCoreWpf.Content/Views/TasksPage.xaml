@@ -44,9 +44,6 @@
                         <MenuItem Header="Configure Style(_T)..." Command="{Binding ConfigureStyleCommand}" Icon="{materialDesign:PackIcon Kind=Palette}" />
                         <MenuItem Header="Application Preference(_P)..." Command="{Binding ApplicationPreferenceCommand}" Icon="{materialDesign:PackIcon Kind=Cog}" />
                     </MenuItem>
-                    <MenuItem Header="Help(_H)">
-                        <MenuItem Header="About ToDo Core Wpf(_A)..." Command="{Binding AboutCommand}" Icon="{materialDesign:PackIcon Kind=InformationCircleOutline}" />
-                    </MenuItem>
                 </Menu>
             </Grid>
             <Grid Grid.Column="1" Margin="8">

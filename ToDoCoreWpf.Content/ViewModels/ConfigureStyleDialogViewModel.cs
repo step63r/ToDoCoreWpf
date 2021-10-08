@@ -1,4 +1,5 @@
 ﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
+using NLog;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
@@ -9,6 +10,9 @@ using System.Windows.Media;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
+    /// <summary>
+    /// ConfigureStyleDialog.xamlのViewModelクラス
+    /// </summary>
     public class ConfigureStyleDialogViewModel : BindableBase, IDialogAware
     {
         #region プロパティ
@@ -175,6 +179,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// 状況一覧のファイルパス
         /// </summary>
         private static readonly string _statusesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\statuses.json";
+        /// <summary>
+        /// ロガー
+        /// </summary>
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         #endregion
 
         #region コンストラクタ
@@ -183,7 +191,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         public ConfigureStyleDialogViewModel()
         {
-
+            _logger.Info("start");
+            _logger.Info("end");
         }
         #endregion
     }

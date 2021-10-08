@@ -1,6 +1,8 @@
-﻿using MinatoProject.Apps.ToDoCoreWpf.Native;
+﻿using MinatoProject.Apps.ToDoCoreWpf.Core.Native;
+using MinatoProject.Apps.ToDoCoreWpf.Core.Services;
+using System.Collections.Generic;
 using System.Windows;
-using static MinatoProject.Apps.ToDoCoreWpf.Native.InterceptKeyboard;
+using System.Windows.Forms;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Views
 {
@@ -11,9 +13,13 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
     {
         #region メンバ変数
         /// <summary>
-        /// 
+        /// 設定情報
         /// </summary>
-        private readonly InterceptKeyboard _interceptKeyboard = new();
+        private readonly SettingsStore _settings;
+        /// <summary>
+        /// 押下されているキーのリスト
+        /// </summary>
+        private readonly List<Keys> _detectedKeys = new();
         #endregion
 
         /// <summary>
@@ -24,8 +30,12 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
             InitializeComponent();
             LoadWindowBounds();
 
-            _interceptKeyboard.KeyDownEvent += OnKeyDown;
-            _interceptKeyboard.Hook();
+            // 他のDLLと共有する設定値はここで初期化する
+            _settings = SettingsStore.GetInstance();
+            _settings.InitializeInstance();
+
+            KeyboardHook.AddEvent(HookKeyboard);
+            KeyboardHook.Start();
         }
 
         /// <summary>
@@ -39,7 +49,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
             SaveWindowBounds();
 
             // 通知領域に格納する設定なら終了をキャンセル
-            if (Properties.Settings.Default.ExitAsMinimized)
+            if (_settings.GetSettings().ExitAsMinimized)
             {
                 e.Cancel = true;
                 WindowState = WindowState.Minimized;
@@ -50,7 +60,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
             {
                 e.Cancel = false;
                 Properties.Settings.Default.Save();
-                _interceptKeyboard.KeyDownEvent -= OnKeyDown;
+
+                KeyboardHook.RemoveEvent(HookKeyboard);
+                KeyboardHook.Stop();
             }
         }
 
@@ -87,8 +99,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
-            Application.Current.Shutdown();
-            _interceptKeyboard.KeyDownEvent -= OnKeyDown;
+            System.Windows.Application.Current.Shutdown();
+
+            KeyboardHook.RemoveEvent(HookKeyboard);
+            KeyboardHook.Stop();
         }
 
         /// <summary>
@@ -138,33 +152,66 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnKeyDown(object sender, OriginalKeyEventArg e)
+        /// <param name="s"></param>
+        private void HookKeyboard(ref KeyboardHook.StateKeyboard s)
         {
-            if (e.KeyCode == 0xA1)  // VK_RSHIFT
+            switch (s.Stroke)
             {
-                if (!IsVisible)
-                {
-                    Show();
-                }
+                case KeyboardHook.Stroke.KEY_DOWN:
+                case KeyboardHook.Stroke.SYSKEY_DOWN:
+                    if (!_detectedKeys.Contains(s.Key))
+                    {
+                        _detectedKeys.Add(s.Key);
+                    }
 
-                if (WindowState == WindowState.Minimized)
-                {
-                    WindowState = WindowState.Normal;
-                }
+                    // フックするキーに設定されている全てが押下されているかチェック
+                    bool ret = true;
+                    foreach (var k in _settings.GetSettings().HookKeys)
+                    {
+                        if (!_detectedKeys.Contains(k))
+                        {
+                            ret = false;
+                        }
+                    }
 
-                if (!ShowInTaskbar)
-                {
-                    taskbarIcon.Visibility = Visibility.Collapsed;
-                    ShowInTaskbar = true;
-                    WindowState = WindowState.Normal;
-                }
+                    // 条件を満たしたらこのウィンドウを最前面に
+                    if (ret)
+                    {
+                        if (!IsVisible)
+                        {
+                            Show();
+                        }
 
-                _ = Activate();
-                Topmost = true;
-                Topmost = false;
-                _ = Focus();
+                        if (WindowState == WindowState.Minimized)
+                        {
+                            WindowState = WindowState.Normal;
+                        }
+
+                        if (!ShowInTaskbar)
+                        {
+                            taskbarIcon.Visibility = Visibility.Collapsed;
+                            ShowInTaskbar = true;
+                            WindowState = WindowState.Normal;
+                        }
+
+                        _ = Activate();
+                        Topmost = true;
+                        Topmost = false;
+                        _ = Focus();
+                    }
+                    break;
+
+                case KeyboardHook.Stroke.KEY_UP:
+                case KeyboardHook.Stroke.SYSKEY_UP:
+                    if (_detectedKeys.Contains(s.Key))
+                    {
+                        _ = _detectedKeys.Remove(s.Key);
+                    }
+                    break;
+
+                case KeyboardHook.Stroke.UNKNOWN:
+                default:
+                    break;
             }
         }
     }

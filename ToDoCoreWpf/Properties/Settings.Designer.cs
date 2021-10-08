@@ -25,18 +25,6 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ExitAsMinimized {
-            get {
-                return ((bool)(this["ExitAsMinimized"]));
-            }
-            set {
-                this["ExitAsMinimized"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Normal")]
         public global::System.Windows.WindowState WindowState {
             get {
