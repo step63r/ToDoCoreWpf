@@ -64,13 +64,13 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0" Margin="0 0 8 0">
                     <ComboBox ItemsSource="{Binding Categories}" DisplayMemberPath="Name" IsEditable="True" StaysOpenOnEdit="True"
-                              Text="{Binding Task.Category.Name, UpdateSourceTrigger=PropertyChanged}"
+                              Text="{Binding SelectedCategoryValue, UpdateSourceTrigger=PropertyChanged}"
                               Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                               materialDesign:HintAssist.Hint="Category" />
                 </Grid>
                 <Grid Grid.Column="1">
                     <ComboBox ItemsSource="{Binding Statuses}" DisplayMemberPath="Name" IsEditable="True" StaysOpenOnEdit="True"
-                              Text="{Binding Task.Status.Name, UpdateSourceTrigger=PropertyChanged}"
+                              Text="{Binding  SelectedStatusValue, UpdateSourceTrigger=PropertyChanged}"
                               Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                               materialDesign:HintAssist.Hint="Status" />
                 </Grid>

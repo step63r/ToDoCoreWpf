@@ -5,7 +5,9 @@ using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
@@ -43,6 +45,26 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         {
             get => _statuses;
             set => _ = SetProperty(ref _statuses, value);
+        }
+
+        private string _selectedCategoryValue = string.Empty;
+        /// <summary>
+        /// 区分に表示されている文字列
+        /// </summary>
+        public string SelectedCategoryValue
+        {
+            get => _selectedCategoryValue;
+            set => _ = SetProperty(ref _selectedCategoryValue, value);
+        }
+
+        private string _selectedStatusValue = string.Empty;
+        /// <summary>
+        /// 状況に表示されている文字列
+        /// </summary>
+        public string SelectedStatusValue
+        {
+            get => _selectedStatusValue;
+            set => _ = SetProperty(ref _selectedStatusValue, value);
         }
         #endregion
 
@@ -93,15 +115,23 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public void OnDialogOpened(IDialogParameters parameters)
         {
             _logger.Info("start");
+            Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath));
+            Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath));
             Task = parameters.GetValue<ToDoTask>("Task");
-            if (Task != null)
+            if (Task != null && Task.Guid != default)
             {
-                _currentCategory = new ToDoCategory(Task.Category);
-                _currentStatus = new ToDoStatus(Task.Status);
-            }
+                if (Task.CategoryGuid != default)
+                {
+                    _currentCategory = new ToDoCategory(Categories.FirstOrDefault(item => item.Guid.Equals(Task.CategoryGuid)));
+                    SelectedCategoryValue = _currentCategory.Name;
+                }
 
-            Categories = parameters.GetValue<ObservableCollection<ToDoCategory>>("Categories");
-            Statuses = parameters.GetValue<ObservableCollection<ToDoStatus>>("Statuses");
+                if (Task.StatusGuid != default)
+                {
+                    _currentStatus = new ToDoStatus(Statuses.FirstOrDefault(item => item.Guid.Equals(Task.StatusGuid)));
+                    SelectedStatusValue = _currentStatus.Name;
+                }
+            }
             _logger.Info("end");
         }
         #endregion
@@ -119,6 +149,14 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// ロガー
         /// </summary>
         private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        /// <summary>
+        /// 区分一覧ファイルパス
+        /// </summary>
+        private static readonly string _categoriesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\categories.json";
+        /// <summary>
+        /// 状況一覧ファイルパス
+        /// </summary>
+        private static readonly string _statusesFilePath = $@"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\MinatoProject\Apps\ToDoCoreWpf\statuses.json";
         #endregion
 
         #region コンストラクタ
@@ -142,35 +180,51 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         private void ExecuteOkCommand()
         {
             _logger.Info("start");
-            // 区分と状況の名前が変更されていたら新しいインスタンスに差し替える
-            if (!_currentCategory.Name.Equals(Task.Category.Name))
+            // 区分と状況の名前が変更されていたら新しいGuidに差し替える
+            if (!string.IsNullOrEmpty(SelectedCategoryValue))
             {
-                var category = Categories.FirstOrDefault(item => item.Name.Equals(Task.Category.Name));
-                if (category == null)
+                var updateCategory = Categories.FirstOrDefault(item => item.Name.Equals(SelectedCategoryValue));
+                if (updateCategory == null)
                 {
+                    // 新規作成
                     int order = Categories.Count == 0 ? 0 : Categories.Max(item => item.Order) + 1;
-                    category = new ToDoCategory()
+                    var category = new ToDoCategory()
                     {
                         Order = order,
-                        Name = Task.Category.Name
+                        Name = SelectedCategoryValue
                     };
+                    Categories.Add(category);
+                    File.WriteAllText(_categoriesFilePath, JsonSerializer.Serialize(Categories));
+
+                    Task.CategoryGuid = category.Guid;
                 }
-                Task.Category = category;
+                else
+                {
+                    Task.CategoryGuid = updateCategory.Guid;
+                }
             }
 
-            if (!_currentStatus.Name.Equals(Task.Status.Name))
+            if (!string.IsNullOrEmpty(SelectedStatusValue))
             {
-                var status = Statuses.FirstOrDefault(item => item.Name.Equals(Task.Status.Name));
-                if (status == null)
+                var updateStatus = Statuses.FirstOrDefault(item => item.Name.Equals(SelectedStatusValue));
+                if (updateStatus == null)
                 {
+                    // 新規作成
                     int order = Statuses.Count == 0 ? 0 : Statuses.Max(item => item.Order) + 1;
-                    status = new ToDoStatus()
+                    var status = new ToDoStatus()
                     {
                         Order = order,
-                        Name = Task.Status.Name
+                        Name = SelectedStatusValue
                     };
+                    Statuses.Add(status);
+                    File.WriteAllText(_statusesFilePath, JsonSerializer.Serialize(Statuses));
+
+                    Task.StatusGuid = status.Guid;
                 }
-                Task.Status = status;
+                else
+                {
+                    Task.StatusGuid = updateStatus.Guid;
+                }
             }
 
             Task.Updated = DateTime.Now;

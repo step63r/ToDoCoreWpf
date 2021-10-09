@@ -7,7 +7,7 @@
     <RootNamespace>MinatoProject.Apps.ToDoCoreWpf</RootNamespace>
     <ApplicationIcon>Resources\ToDoCoreWpf.ico</ApplicationIcon>
     <Win32Resource />
-    <Version>2021.10.09.01</Version>
+    <Version>2021.10.10.01</Version>
     <Authors>minato</Authors>
     <Copyright>Copyright © minato 2021</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>

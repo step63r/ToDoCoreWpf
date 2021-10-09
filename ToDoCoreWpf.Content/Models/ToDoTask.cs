@@ -32,43 +32,43 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
         }
 
-        private ToDoCategory _category = new();
+        private Guid _categoryGuid;
         /// <summary>
         /// 区分
         /// </summary>
         [DataMember]
-        public virtual ToDoCategory Category
+        public virtual Guid CategoryGuid
         {
-            get => _category;
+            get => _categoryGuid;
             set
             {
-                if (value == _category)
+                if (value == _categoryGuid)
                 {
                     return;
                 }
-                _category = value;
+                _categoryGuid = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged(nameof(Category));
+                RaisePropertyChanged(nameof(CategoryGuid));
             }
         }
 
-        private ToDoStatus _status = new();
+        private Guid _statusGuid;
         /// <summary>
         /// 状況
         /// </summary>
         [DataMember]
-        public virtual ToDoStatus Status
+        public virtual Guid StatusGuid
         {
-            get => _status;
+            get => _statusGuid;
             set
             {
-                if (value == _status)
+                if (value == _statusGuid)
                 {
                     return;
                 }
-                _status = value;
+                _statusGuid = value;
                 RaisePropertyChanged();
-                RaisePropertyChanged(nameof(Status));
+                RaisePropertyChanged(nameof(StatusGuid));
             }
         }
 
@@ -206,8 +206,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         public ToDoTask(ToDoTask source)
         {
             Guid = source.Guid;
-            Category = new ToDoCategory(source.Category);
-            Status = new ToDoStatus(source.Status);
+            CategoryGuid = source.CategoryGuid;
+            StatusGuid = source.StatusGuid;
             Priority = source.Priority;
             Created = source.Created;
             Updated = source.Updated;
@@ -227,7 +227,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         /// 
         /// </summary>
         /// <param name="propertyName"></param>
-        private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -268,9 +268,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
 
             // 優先度が同じ場合、状況で比較
-            if (Status != null && other.Status != null)
+            if (StatusGuid != default && other.StatusGuid != default)
             {
-                ret = Status.Order.CompareTo(other.Status.Order);
+                ret = StatusGuid.CompareTo(other.StatusGuid);
                 if (ret != 0)
                 {
                     return ret;
@@ -278,9 +278,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
             }
 
             // 状況が同じ場合、区分で比較
-            if (Category != null && other.Category != null)
+            if (CategoryGuid != default && other.CategoryGuid != default)
             {
-                ret = Category.Order.CompareTo(other.Category.Order);
+                ret = CategoryGuid.CompareTo(other.CategoryGuid);
                 if (ret != 0)
                 {
                     return ret;

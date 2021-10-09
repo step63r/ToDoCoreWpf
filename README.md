@@ -1,5 +1,7 @@
 # ToDo Core Wpf
 
+![demo](./ToDoCoreWpf.gif)
+
 ## Description
 
 Simple ToDo (task management) tool.
