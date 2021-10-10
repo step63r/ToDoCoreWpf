@@ -110,7 +110,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// </summary>
         public void OnDialogClosed()
         {
-
+            _logger.Info("start");
+            _logger.Info("end");
         }
 
         /// <summary>
@@ -119,7 +120,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// <param name="parameters"></param>
         public void OnDialogOpened(IDialogParameters parameters)
         {
+            _logger.Info("start");
             Categories = parameters.GetValue<List<ToDoCategory>>("Categories");
+            _logger.Info("end");
         }
         #endregion
 

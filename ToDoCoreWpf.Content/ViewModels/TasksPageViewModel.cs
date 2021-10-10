@@ -416,7 +416,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             _logger.Info("start");
 
             Categories = JsonSerializer.Deserialize<ObservableCollection<ToDoCategory>>(File.ReadAllText(_categoriesFilePath))
-                    .SortCollection();
+                .SortCollection();
             Statuses = JsonSerializer.Deserialize<ObservableCollection<ToDoStatus>>(File.ReadAllText(_statusesFilePath))
                 .SortCollection();
 
@@ -438,6 +438,25 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 Tasks = Tasks.SortCollection();
                 File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
             }
+
+            // 外部キーを更新
+            foreach (var task in Tasks)
+            {
+                var category = Categories.FirstOrDefault(item => item.Guid.Equals(task.CategoryGuid));
+                if (category == null)
+                {
+                    task.CategoryGuid = default;
+                }
+
+                var status = Statuses.FirstOrDefault(item => item.Guid.Equals(task.StatusGuid));
+                if (status == null)
+                {
+                    task.StatusGuid = default;
+                }
+            }
+            Tasks = Tasks.SortCollection();
+            File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
+
             _logger.Info("end");
         }
     }
