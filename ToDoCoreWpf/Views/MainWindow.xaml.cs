@@ -1,6 +1,8 @@
 ﻿using MinatoProject.Apps.ToDoCoreWpf.Core.Native;
 using MinatoProject.Apps.ToDoCoreWpf.Core.Services;
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -86,9 +88,13 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
         /// <param name="e"></param>
         private void ShowWindowMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            taskbarIcon.Visibility = Visibility.Collapsed;
             ShowInTaskbar = true;
             WindowState = WindowState.Normal;
+            _ = Activate();
+
+            // アイコンダブルクリックから発火時は遅延しないと他のアイコンのクリックが発生する
+            _ = Task.Delay(100)
+                    .ContinueWith(_ => Dispatcher.BeginInvoke((Action)(() => taskbarIcon.Visibility = Visibility.Collapsed)));
         }
 
         /// <summary>
@@ -103,6 +109,26 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
 
             KeyboardHook.RemoveEvent(HookKeyboard);
             KeyboardHook.Stop();
+        }
+
+        /// <summary>
+        /// taskbarIconダブルクリック時のイベントハンドラ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void taskbarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ShowWindowMenuItem_Click(sender, e);
+        }
+
+        /// <summary>
+        /// ウィンドウが閉じられたときのイベントハンドラ
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            taskbarIcon.Dispose();
         }
 
         /// <summary>
@@ -182,15 +208,14 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Views
                             Show();
                         }
 
-                        if (WindowState == WindowState.Minimized)
-                        {
-                            WindowState = WindowState.Normal;
-                        }
-
                         if (!ShowInTaskbar)
                         {
                             taskbarIcon.Visibility = Visibility.Collapsed;
                             ShowInTaskbar = true;
+                            WindowState = WindowState.Normal;
+                        }
+                        else if (WindowState == WindowState.Minimized)
+                        {
                             WindowState = WindowState.Normal;
                         }
 
