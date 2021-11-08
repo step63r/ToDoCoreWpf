@@ -100,7 +100,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Models
         public DateTime Created
         {
             get => _created;
-            private set
+            set
             {
                 if (value == _created)
                 {
