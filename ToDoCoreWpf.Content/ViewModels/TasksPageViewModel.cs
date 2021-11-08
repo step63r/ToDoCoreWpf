@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 {
@@ -222,6 +223,14 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// ロガー
         /// </summary>
         private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        /// <summary>
+        /// ディスパッチャタイマー
+        /// </summary>
+        private DispatcherTimer _dispatcherTimer = null;
+        /// <summary>
+        /// 最後にタスク一覧を更新した日付
+        /// </summary>
+        private DateTime _lastUpdateDate = DateTime.Now;
         #endregion
 
         #region コンストラクタ
@@ -266,6 +275,23 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             RemoveTaskCommand = new DelegateCommand(ExecuteRemoveTaskCommand, CanExecuteRemoveTaskCommand)
                 .ObservesProperty(() => SelectedTask);
             _logger.Info("end");
+
+            // ディスパッチャタイマーの開始
+            _dispatcherTimer = new DispatcherTimer();
+            _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            _dispatcherTimer.Tick += OnDispatcherTimerTicked;
+            _dispatcherTimer.Start();
+        }
+        #endregion
+
+        #region ファイナライザ
+        /// <summary>
+        /// ファイナライザ
+        /// </summary>
+        ~TasksPageViewModel()
+        {
+            _dispatcherTimer.Stop();
+            _dispatcherTimer.Tick -= OnDispatcherTimerTicked;
         }
         #endregion
 
@@ -458,6 +484,22 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
 
             _logger.Info("end");
+        }
+
+        /// <summary>
+        /// DispatcherTimerのイベントハンドラ
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnDispatcherTimerTicked(object sender, EventArgs e)
+        {
+            var current = DateTime.Now;
+            if (_lastUpdateDate.Date < current.Date)
+            {
+                _logger.Info("detected date changed");
+                UpdateTasks();
+                _lastUpdateDate = current;
+            }
         }
     }
 }
