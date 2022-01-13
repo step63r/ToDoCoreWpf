@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ext="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Extensions"
              xmlns:model="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Models"
+             xmlns:behaviours="clr-namespace:MinatoProject.Apps.ToDoCoreWpf.Content.Behaviours"
              xmlns:prism="http://prismlibrary.com/"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              prism:ViewModelLocator.AutoWireViewModel="True"
@@ -83,7 +84,8 @@
             </Grid>
 
             <Grid Grid.Row="4" Margin="0 8">
-                <TextBox Text="{Binding Task.Detail, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" materialDesign:HintAssist.Hint="Detail" />
+                <TextBox Text="{Binding Task.Detail, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" materialDesign:HintAssist.Hint="Detail"
+                         behaviours:TextBoxImeFixBehaviour.ImeFix="True" />
             </Grid>
         </Grid>
 
