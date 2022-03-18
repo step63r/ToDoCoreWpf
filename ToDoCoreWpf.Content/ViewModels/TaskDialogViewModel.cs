@@ -4,6 +4,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -34,7 +35,12 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         public ObservableCollection<ToDoCategory> Categories
         {
             get => _categories;
-            set => _ = SetProperty(ref _categories, value);
+            set
+            {
+                var list = new List<ToDoCategory>(value);
+                list.Sort();
+                _ = SetProperty(ref _categories, new ObservableCollection<ToDoCategory>(list));
+            }
         }
 
         private ObservableCollection<ToDoStatus> _statuses;
