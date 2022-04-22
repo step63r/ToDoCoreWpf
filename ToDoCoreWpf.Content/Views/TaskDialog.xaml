@@ -22,7 +22,10 @@
             <Setter Property="MinWidth" Value="360" />
         </Style>
     </prism:Dialog.WindowStyle>
-    <Grid Margin="8">
+    <UserControl.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding CancelCommand}" />
+    </UserControl.InputBindings>
+    <Grid Margin="8" behaviours:KeyboardFocusBehaviour.On="{Binding ElementName=tbTitle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
@@ -37,7 +40,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Margin="0 8">
-                <TextBox Text="{Binding Task.Title, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                <TextBox x:Name="tbTitle" Text="{Binding Task.Title, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                          FontSize="24" materialDesign:HintAssist.Hint="Title" materialDesign:HintAssist.FloatingScale="0.5" />
             </Grid>
 
