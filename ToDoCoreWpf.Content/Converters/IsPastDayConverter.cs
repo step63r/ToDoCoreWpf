@@ -21,7 +21,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.Converters
         {
             if (value is DateTime sourceDate)
             {
-                return sourceDate < DateTime.Now;
+                return sourceDate.Date < DateTime.Now.Date;
             }
             throw new InvalidCastException();
         }
