@@ -4,15 +4,15 @@
     <UseWPF>true</UseWPF>
     <AssemblyName>ToDoCoreWpf.Content</AssemblyName>
     <RootNamespace>MinatoProject.Apps.ToDoCoreWpf.Content</RootNamespace>
-    <Version>2022.01.13.01</Version>
+    <Version>2022.05.01.01</Version>
     <Authors>minato</Authors>
     <Company>minato project</Company>
     <Copyright>Copyright © minato 2021-2022</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <NeutralLanguage>ja-JP</NeutralLanguage>
     <Platforms>x86;x64</Platforms>
-    <AssemblyVersion>2022.01.13.01</AssemblyVersion>
-    <FileVersion>2022.01.13.01</FileVersion>
+    <AssemblyVersion>2022.05.01.01</AssemblyVersion>
+    <FileVersion>2022.05.01.01</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />

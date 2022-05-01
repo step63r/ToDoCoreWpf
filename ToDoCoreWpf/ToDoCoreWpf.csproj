@@ -7,15 +7,15 @@
     <RootNamespace>MinatoProject.Apps.ToDoCoreWpf</RootNamespace>
     <ApplicationIcon>Resources\ToDoCoreWpf.ico</ApplicationIcon>
     <Win32Resource />
-    <Version>2022.01.13.01</Version>
+    <Version>2022.05.01.01</Version>
     <Authors>minato</Authors>
     <Copyright>Copyright © minato 2021-2022</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <NeutralLanguage>ja-JP</NeutralLanguage>
     <Company>minato project</Company>
     <Platforms>x86;x64</Platforms>
-    <AssemblyVersion>2022.01.13.01</AssemblyVersion>
-    <FileVersion>2022.01.13.01</FileVersion>
+    <AssemblyVersion>2022.05.01.01</AssemblyVersion>
+    <FileVersion>2022.05.01.01</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\ToDoCoreWpf.ico" />
