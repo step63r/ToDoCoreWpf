@@ -1,7 +1,9 @@
-﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Extensions;
+﻿using MinatoProject.Apps.ToDoCoreWpf.Content.Events;
+using MinatoProject.Apps.ToDoCoreWpf.Content.Extensions;
 using MinatoProject.Apps.ToDoCoreWpf.Content.Models;
 using NLog;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using System;
@@ -204,6 +206,10 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// IDialogService
         /// </summary>
         private readonly IDialogService _dialogService;
+        /// <summary>
+        /// IEventAggregator
+        /// </summary>
+        private readonly IEventAggregator _eventAggregator;
         #endregion
 
         #region メンバ変数
@@ -238,7 +244,8 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
         /// コンストラクタ
         /// </summary>
         /// <param name="dialogService">IDialogService</param>
-        public TasksPageViewModel(IDialogService dialogService)
+        /// <param name="eventAggregator">IEventAggregator</param>
+        public TasksPageViewModel(IDialogService dialogService, IEventAggregator eventAggregator)
         {
             _logger.Info("start");
             // ファイル作成＆読み込み
@@ -262,6 +269,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
 
             // インターフェイスの登録
             _dialogService = dialogService;
+            _eventAggregator = eventAggregator;
 
             // コマンドの登録
             ShutdownCommand = new DelegateCommand(ExecuteShutdownCommand);
@@ -281,6 +289,9 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             _dispatcherTimer.Tick += OnDispatcherTimerTicked;
             _dispatcherTimer.Start();
+
+            // ツールチップ更新
+            PublishTaskEventForToolTip();
         }
         #endregion
 
@@ -483,6 +494,7 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
             Tasks = Tasks.SortCollection();
             File.WriteAllText(_tasksFilePath, JsonSerializer.Serialize(Tasks));
 
+            PublishTaskEventForToolTip();
             _logger.Info("end");
         }
 
@@ -500,6 +512,17 @@ namespace MinatoProject.Apps.ToDoCoreWpf.Content.ViewModels
                 UpdateTasks();
                 _lastUpdateDate = current;
             }
+        }
+
+        /// <summary>
+        /// ツールチップテキストのためタスク変更イベントをMainWindowViewModelに通知する
+        /// </summary>
+        private void PublishTaskEventForToolTip()
+        {
+            int overdue = Tasks.Where(item => item.DueDate.Date < DateTime.Now.Date).Count();
+            int deadline = Tasks.Where(item => item.DueDate.Date == DateTime.Now.Date).Count();
+            int future = Tasks.Where(item => item.DueDate.Date > DateTime.Now.Date).Count();
+            _eventAggregator.GetEvent<TaskEvent>().Publish((overdue, deadline, future));
         }
     }
 }

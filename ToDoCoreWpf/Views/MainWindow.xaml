@@ -17,7 +17,14 @@
         StateChanged="Window_StateChanged">
     <Grid>
         <tb:TaskbarIcon x:Name="taskbarIcon" IconSource="/ToDoCoreWpf;component/Resources/ToDoCoreWpf.ico" Visibility="Collapsed"
-                        MenuActivation="RightClick" TrayMouseDoubleClick="taskbarIcon_TrayMouseDoubleClick" ToolTipText="{Binding Title}">
+                        MenuActivation="RightClick" TrayMouseDoubleClick="taskbarIcon_TrayMouseDoubleClick" ToolTipText="{Binding OdfMessage}">
+            <!--<tb:TaskbarIcon.TrayToolTip>
+                <StackPanel>
+                    <TextBlock Text="{Binding Overdue, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding Deadline, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="{Binding Future, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </tb:TaskbarIcon.TrayToolTip>-->
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu>
                     <MenuItem x:Name="ShowWindowMenuItem" Header="Show Window" Click="ShowWindowMenuItem_Click" />
